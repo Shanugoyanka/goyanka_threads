@@ -13,13 +13,11 @@ import {
 
 interface OrderFormProps {
   order: VeilOrder;
-  previewImages: string[];
   onBack: () => void;
 }
 
 export default function OrderForm({
   order,
-  previewImages,
   onBack,
 }: OrderFormProps) {
   const [customer, setCustomer] = useState<CustomerInfo>({
@@ -73,7 +71,6 @@ export default function OrderForm({
         body: JSON.stringify({
           order,
           customer,
-          previewImages: previewImages.slice(0, 1),
         }),
       });
 

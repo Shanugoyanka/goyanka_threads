@@ -33,8 +33,6 @@ export default function StepWizard() {
     customText: "",
     customType: "none",
   });
-  const [previewImages, setPreviewImages] = useState<string[]>([]);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [direction, setDirection] = useState(1);
 
   const canProceed = useCallback(() => {
@@ -64,29 +62,6 @@ export default function StepWizard() {
   const goBack = () => {
     setDirection(-1);
     setStep((s) => Math.max(0, s - 1));
-  };
-
-  const handleGeneratePreview = async () => {
-    setIsGenerating(true);
-    try {
-      const res = await fetch("/api/generate-preview", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pattern: order.pattern,
-          color: order.color,
-          lace: order.lace,
-          length: order.length,
-          customText: order.customText,
-        }),
-      });
-      const data = await res.json();
-      setPreviewImages(data.images);
-    } catch (error) {
-      console.error("Failed to generate preview:", error);
-    } finally {
-      setIsGenerating(false);
-    }
   };
 
   const variants = {
@@ -211,9 +186,6 @@ export default function StepWizard() {
             {step === 5 && (
               <Preview
                 order={order}
-                previewImages={previewImages}
-                isGenerating={isGenerating}
-                onGenerate={handleGeneratePreview}
                 onConfirm={() => {
                   setDirection(1);
                   setStep(6);
@@ -227,7 +199,6 @@ export default function StepWizard() {
             {step === 6 && (
               <OrderForm
                 order={order}
-                previewImages={previewImages}
                 onBack={() => {
                   setDirection(-1);
                   setStep(5);
