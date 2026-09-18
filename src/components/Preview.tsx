@@ -8,7 +8,8 @@ import {
   laces,
   lengths,
   VeilOrder,
-  getPreviewImageUrl,
+  getPatternImageUrl,
+  getBorderImageUrl,
 } from "@/data/veilOptions";
 
 interface PreviewProps {
@@ -18,15 +19,18 @@ interface PreviewProps {
 }
 
 export default function Preview({ order, onConfirm, onBack }: PreviewProps) {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const [patternLoaded, setPatternLoaded] = useState(false);
+  const [patternError, setPatternError] = useState(false);
+  const [borderLoaded, setBorderLoaded] = useState(false);
+  const [borderError, setBorderError] = useState(false);
 
   const patternName = patterns.find((p) => p.id === order.pattern)?.name ?? "";
   const colorData = colors.find((c) => c.id === order.color);
   const laceName = laces.find((l) => l.id === order.lace)?.name ?? "";
   const lengthData = lengths.find((l) => l.id === order.length);
 
-  const imageUrl = getPreviewImageUrl(order.pattern, order.color, order.lace);
+  const patternUrl = getPatternImageUrl(order.pattern, order.color);
+  const borderUrl = getBorderImageUrl(order.lace, order.color);
 
   return (
     <div>
@@ -71,80 +75,110 @@ export default function Preview({ order, onConfirm, onBack }: PreviewProps) {
         </div>
       </div>
 
-      {/* Preview image */}
-      <div className="max-w-sm mx-auto">
-        <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-b from-[#FFF5EE] to-[#F0E6D4] shadow-lg">
-          {imageUrl ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imageUrl}
-                alt={`${patternName} veil in ${colorData?.name} with ${laceName}`}
-                onLoad={() => setImageLoaded(true)}
-                onError={() => setImageError(true)}
-                className={`w-full h-full object-cover transition-opacity duration-500 ${
-                  imageLoaded && !imageError ? "opacity-100" : "opacity-0"
-                }`}
-              />
-
-              {/* Loading spinner */}
-              {!imageLoaded && !imageError && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full border-4 border-[var(--gold-light)] border-t-[var(--gold)] animate-spin" />
-                </div>
-              )}
-
-              {/* Image failed to load */}
-              {imageError && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
-                  <span className="text-4xl">⚠️</span>
-                  <p className="text-gray-500 text-sm">Image failed to load</p>
-                  <button
-                    onClick={() => { setImageError(false); setImageLoaded(false); }}
-                    className="text-[var(--gold)] underline text-sm cursor-pointer"
-                  >
-                    Retry
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            /* No image URL for this combination */
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
-              <span className="text-5xl">👰</span>
-              <p className="text-gray-600 font-medium" style={{ fontFamily: "var(--font-playfair), serif" }}>
-                {patternName}
-              </p>
-              <p className="text-gray-500 text-xs">
-                {colorData?.name} · {laceName} · {lengthData?.label}
-              </p>
-              <div
-                className="w-20 h-20 rounded-full border-4 border-white shadow-md"
-                style={{ backgroundColor: colorData?.hex }}
-              />
-              <p className="text-[11px] text-gray-400 mt-1">
-                Preview image coming soon — your selections are saved
-              </p>
-            </div>
-          )
-
-          {/* Custom text overlay */}
-          {order.customType !== "none" && order.customText && imageLoaded && (
-            <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-sm px-4 py-1.5 rounded-full">
-              <p className="text-white text-xs font-medium italic" style={{ fontFamily: "var(--font-playfair), serif" }}>
-                &ldquo;{order.customText}&rdquo;
-              </p>
-            </div>
-          )}
+      {/* Preview images — pattern + border side by side */}
+      <div className="grid grid-cols-2 gap-3 max-w-lg mx-auto">
+        {/* Pattern image */}
+        <div>
+          <p className="text-[10px] uppercase tracking-wider text-gray-400 text-center mb-1.5 font-medium">Embroidery</p>
+          <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-b from-[#FFF5EE] to-[#F0E6D4] shadow-lg">
+            {patternUrl ? (
+              <>
+                <img
+                  src={patternUrl}
+                  alt={`${patternName} in ${colorData?.name}`}
+                  onLoad={() => setPatternLoaded(true)}
+                  onError={() => setPatternError(true)}
+                  className={`w-full h-full object-cover transition-opacity duration-500 ${
+                    patternLoaded && !patternError ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+                {!patternLoaded && !patternError && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full border-4 border-[var(--gold-light)] border-t-[var(--gold)] animate-spin" />
+                  </div>
+                )}
+                {patternError && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
+                    <span className="text-3xl">⚠️</span>
+                    <p className="text-gray-500 text-xs">Failed to load</p>
+                    <button
+                      onClick={() => { setPatternError(false); setPatternLoaded(false); }}
+                      className="text-[var(--gold)] underline text-xs cursor-pointer"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
+                <span className="text-4xl">👰</span>
+                <p className="text-gray-500 text-xs">{patternName}</p>
+              </div>
+            )}
+          </div>
         </div>
 
-        <p className="text-[11px] text-center text-gray-400 mt-2">
-          ✨ Actual product will be handcrafted to match your selections
-        </p>
+        {/* Border image */}
+        <div>
+          <p className="text-[10px] uppercase tracking-wider text-gray-400 text-center mb-1.5 font-medium">Border</p>
+          <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-b from-[#FFF5EE] to-[#F0E6D4] shadow-lg">
+            {borderUrl ? (
+              <>
+                <img
+                  src={borderUrl}
+                  alt={`${laceName} in ${colorData?.name}`}
+                  onLoad={() => setBorderLoaded(true)}
+                  onError={() => setBorderError(true)}
+                  className={`w-full h-full object-cover transition-opacity duration-500 ${
+                    borderLoaded && !borderError ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+                {!borderLoaded && !borderError && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full border-4 border-[var(--gold-light)] border-t-[var(--gold)] animate-spin" />
+                  </div>
+                )}
+                {borderError && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
+                    <span className="text-3xl">⚠️</span>
+                    <p className="text-gray-500 text-xs">Failed to load</p>
+                    <button
+                      onClick={() => { setBorderError(false); setBorderLoaded(false); }}
+                      className="text-[var(--gold)] underline text-xs cursor-pointer"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
+                <span className="text-4xl">🧵</span>
+                <p className="text-gray-500 text-xs">{laceName}</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
+      {/* Custom text */}
+      {order.customType !== "none" && order.customText && (
+        <div className="text-center mt-3">
+          <span className="inline-block bg-black/10 backdrop-blur-sm px-4 py-1.5 rounded-full">
+            <p className="text-sm font-medium italic text-[var(--foreground)]" style={{ fontFamily: "var(--font-playfair), serif" }}>
+              &ldquo;{order.customText}&rdquo;
+            </p>
+          </span>
+        </div>
+      )}
+
+      <p className="text-[11px] text-center text-gray-400 mt-3">
+        ✨ Actual product will be handcrafted to match your selections
+      </p>
+
       {/* Actions */}
-      <div className="flex items-center justify-center gap-3 mt-6">
+      <div className="flex items-center justify-center gap-3 mt-5">
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
