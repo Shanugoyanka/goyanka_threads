@@ -84,16 +84,23 @@ export default function StepWizard() {
       {/* Header */}
       <header className="sticky top-0 z-50 glass-card border-b border-[var(--gold-light)]">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1
-              className="text-xl md:text-2xl font-bold text-[var(--foreground)]"
-              style={{ fontFamily: "var(--font-playfair), serif" }}
-            >
-              Goyanka Threads
-            </h1>
-            <p className="text-xs text-[var(--gold)]">
-              Custom Bridal Veils
-            </p>
+          <div className="flex items-center gap-2">
+            <img
+              src="/logo.png"
+              alt="Goyanka Threads"
+              className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-contain"
+            />
+            <div>
+              <h1
+                className="text-sm md:text-lg font-bold text-[var(--foreground)] leading-tight"
+                style={{ fontFamily: "var(--font-playfair), serif" }}
+              >
+                Goyanka Threads
+              </h1>
+              <p className="text-[10px] md:text-xs text-[var(--gold)]">
+                Custom Bridal Veils
+              </p>
+            </div>
           </div>
 
           {/* Progress indicator */}

@@ -17,7 +17,11 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Goyanka Threads | Custom Bridal Veils",
   description:
-    "Design your dream bridal veil — choose from 15+ Indian embroidery patterns, handpicked colors, premium lace borders, and add your personal touch.",
+    "Design your dream bridal veil — choose from authentic Indian embroidery patterns, handpicked bridal colours, premium lace borders, and add your personal touch.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

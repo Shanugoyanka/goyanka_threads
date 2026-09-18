@@ -86,10 +86,7 @@ export interface VeilOrder {
 }
 
 export interface CustomerInfo {
-  name: string;
-  phone: string;
   address: string;
-  email?: string;
 }
 
 // Image lookup: pattern-color-border → CDN URL

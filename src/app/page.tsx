@@ -33,20 +33,12 @@ export default function Home() {
           transition={{ delay: 0.2, type: "spring" }}
           className="mb-6"
         >
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--gold)] to-[var(--accent)] flex items-center justify-center shadow-lg">
-            <span className="text-3xl">🧵</span>
-          </div>
+          <img
+            src="/logo.png"
+            alt="Goyanka Threads"
+            className="w-40 h-40 md:w-52 md:h-52 mx-auto rounded-2xl shadow-lg object-contain"
+          />
         </motion.div>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-4xl md:text-6xl font-bold mb-4 text-[var(--foreground)]"
-          style={{ fontFamily: "var(--font-playfair), serif" }}
-        >
-          Goyanka Threads
-        </motion.h1>
 
         <motion.p
           initial={{ opacity: 0 }}
@@ -64,7 +56,7 @@ export default function Home() {
           transition={{ delay: 0.6 }}
           className="text-gray-500 mb-10 text-sm md:text-base leading-relaxed max-w-lg mx-auto"
         >
-          Design your dream bridal veil in 5 simple steps. Choose from 15+
+          Design your dream bridal veil in 5 simple steps. Choose from
           authentic Indian embroidery patterns, handpicked bridal colours,
           premium lace borders, and add your personal touch.
         </motion.p>
@@ -94,7 +86,7 @@ export default function Home() {
           <span>•</span>
           <span>5 simple steps</span>
           <span>•</span>
-          <span>AI preview included</span>
+          <span>Preview included</span>
         </motion.div>
       </motion.div>
     </div>
