@@ -60,8 +60,9 @@ export const patterns: PatternOption[] = [
 ];
 
 export const colors: ColorOption[] = [
-  { id: "bridal-red", name: "Bridal Red", hex: "#C41E3A", textColor: "#FFFFFF" },
-  { id: "deep-maroon", name: "Deep Maroon", hex: "#800020", textColor: "#FFFFFF" },
+  { id: "red", name: "Red", hex: "#C41E3A", textColor: "#FFFFFF" },
+  { id: "mehroon", name: "Mehroon", hex: "#800020", textColor: "#FFFFFF" },
+  { id: "rani-pink", name: "Rani Pink", hex: "#E4007C", textColor: "#FFFFFF" },
 ];
 
 export const laces: LaceOption[] = [
@@ -92,55 +93,74 @@ export interface CustomerInfo {
 
 // Image lookup: pattern-color-border → CDN URL
 // Replace these with your actual CDN URLs
+// 4 patterns × 3 colors × 5 borders = 60 images
+// Key format: {pattern}-{color}-{border}
+// Paste your CDN URLs below
 export const previewImages: Record<string, string> = {
-  // Zardozi × Bridal Red
-  "zardozi-bridal-red-gota-kinari-gold": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713412/306bd8bf-5621-4624-941b-2c4cfd676948.jpg",
-  "zardozi-bridal-red-gota-kinari-silver": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713443/f798d51d7f224f9d84f1882afb79bae0.jpg",
-  "zardozi-bridal-red-zardozi-border": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713450/eebfac9f93f345caafb83e02a0d7002d.jpg",
-  "zardozi-bridal-red-pearl-scalloped": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713456/5758d9101bd242718bee1ea661cf72c9.jpg",
-  "zardozi-bridal-red-sequin-scalloped": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713463/40cbac1ae0e541ed82b8ec7134459814.jpg",
-  // Zardozi × Deep Maroon
-  "zardozi-deep-maroon-gota-kinari-gold": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713470/300abf64141847adbb2d923050b9a0ce.jpg",
-  "zardozi-deep-maroon-gota-kinari-silver": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713476/b90c341cb2764c689a190cb90fd474b1.jpg",
-  "zardozi-deep-maroon-zardozi-border": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713483/8809b1abbf014618a60fdba85a96c77a.jpg",
-  "zardozi-deep-maroon-pearl-scalloped": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713490/fd2b79db267640f4af3711a74b6f1e4f.jpg",
-  "zardozi-deep-maroon-sequin-scalloped": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713496/d134f3ac6c334621becda6b0bdc942ec.jpg",
-  // Gota Patti × Bridal Red
-  "gota-patti-bridal-red-gota-kinari-gold": "https://res.cloudinary.com/fetch-ai/image/upload/v1789713503/4a39dbfde8e74c939bc2bedd2eb1ce3a.jpg",
-  "gota-patti-bridal-red-gota-kinari-silver": "https://res.cloudinary.com/fetch-ai/image/upload/v1789714663/859fcf3914f6487cab33ae42fbd0df40.jpg",
-  "gota-patti-bridal-red-zardozi-border": "https://res.cloudinary.com/fetch-ai/image/upload/v1789714670/682aad8038324ade8ad21b196a7a2ec9.jpg",
-  "gota-patti-bridal-red-pearl-scalloped": "https://res.cloudinary.com/fetch-ai/image/upload/v1789714676/a82a0e0e3426472391e96696ae8d446c.jpg",
-  "gota-patti-bridal-red-sequin-scalloped": "https://res.cloudinary.com/fetch-ai/image/upload/v1789714683/05d49c9416ab43369b613f675179e3fb.jpg",
-  // Gota Patti × Deep Maroon
-  "gota-patti-deep-maroon-gota-kinari-gold": "https://res.cloudinary.com/fetch-ai/image/upload/v1789715043/dc3cd6c6babc491ea4d517e9c505e6a0.jpg",
-  "gota-patti-deep-maroon-gota-kinari-silver": "https://res.cloudinary.com/fetch-ai/image/upload/v1789715460/113bebb120f142c5ae2efe30c943fb5e.jpg",
-  "gota-patti-deep-maroon-zardozi-border": "https://res.cloudinary.com/fetch-ai/image/upload/v1789715467/de0c0298f4c64dd5811c46e9e418ac2d.jpg",
-  "gota-patti-deep-maroon-pearl-scalloped": "https://res.cloudinary.com/fetch-ai/image/upload/v1789715473/a7f15e6bbc9540dcbe414290a5ab90f8.jpg",
-  "gota-patti-deep-maroon-sequin-scalloped": "https://res.cloudinary.com/fetch-ai/image/upload/v1789715480/b436bdb7749745108714356c24aea350.jpg",
-  // Mirror Work × Bridal Red
-  "mirror-work-bridal-red-gota-kinari-gold": "",
-  "mirror-work-bridal-red-gota-kinari-silver": "",
-  "mirror-work-bridal-red-zardozi-border": "",
-  "mirror-work-bridal-red-pearl-scalloped": "",
-  "mirror-work-bridal-red-sequin-scalloped": "",
-  // Mirror Work × Deep Maroon
-  "mirror-work-deep-maroon-gota-kinari-gold": "",
-  "mirror-work-deep-maroon-gota-kinari-silver": "",
-  "mirror-work-deep-maroon-zardozi-border": "",
-  "mirror-work-deep-maroon-pearl-scalloped": "",
-  "mirror-work-deep-maroon-sequin-scalloped": "",
-  // Sequin Scatter × Bridal Red
-  "sequin-scatter-bridal-red-gota-kinari-gold": "",
-  "sequin-scatter-bridal-red-gota-kinari-silver": "",
-  "sequin-scatter-bridal-red-zardozi-border": "",
-  "sequin-scatter-bridal-red-pearl-scalloped": "",
-  "sequin-scatter-bridal-red-sequin-scalloped": "",
-  // Sequin Scatter × Deep Maroon
-  "sequin-scatter-deep-maroon-gota-kinari-gold": "",
-  "sequin-scatter-deep-maroon-gota-kinari-silver": "",
-  "sequin-scatter-deep-maroon-zardozi-border": "",
-  "sequin-scatter-deep-maroon-pearl-scalloped": "",
-  "sequin-scatter-deep-maroon-sequin-scalloped": "",
+  // ── Zardozi ──
+  "zardozi-red-gota-kinari-gold": "",
+  "zardozi-red-gota-kinari-silver": "",
+  "zardozi-red-zardozi-border": "",
+  "zardozi-red-pearl-scalloped": "",
+  "zardozi-red-sequin-scalloped": "",
+  "zardozi-mehroon-gota-kinari-gold": "",
+  "zardozi-mehroon-gota-kinari-silver": "",
+  "zardozi-mehroon-zardozi-border": "",
+  "zardozi-mehroon-pearl-scalloped": "",
+  "zardozi-mehroon-sequin-scalloped": "",
+  "zardozi-rani-pink-gota-kinari-gold": "",
+  "zardozi-rani-pink-gota-kinari-silver": "",
+  "zardozi-rani-pink-zardozi-border": "",
+  "zardozi-rani-pink-pearl-scalloped": "",
+  "zardozi-rani-pink-sequin-scalloped": "",
+  // ── Gota Patti ──
+  "gota-patti-red-gota-kinari-gold": "",
+  "gota-patti-red-gota-kinari-silver": "",
+  "gota-patti-red-zardozi-border": "",
+  "gota-patti-red-pearl-scalloped": "",
+  "gota-patti-red-sequin-scalloped": "",
+  "gota-patti-mehroon-gota-kinari-gold": "",
+  "gota-patti-mehroon-gota-kinari-silver": "",
+  "gota-patti-mehroon-zardozi-border": "",
+  "gota-patti-mehroon-pearl-scalloped": "",
+  "gota-patti-mehroon-sequin-scalloped": "",
+  "gota-patti-rani-pink-gota-kinari-gold": "",
+  "gota-patti-rani-pink-gota-kinari-silver": "",
+  "gota-patti-rani-pink-zardozi-border": "",
+  "gota-patti-rani-pink-pearl-scalloped": "",
+  "gota-patti-rani-pink-sequin-scalloped": "",
+  // ── Mirror Work ──
+  "mirror-work-red-gota-kinari-gold": "",
+  "mirror-work-red-gota-kinari-silver": "",
+  "mirror-work-red-zardozi-border": "",
+  "mirror-work-red-pearl-scalloped": "",
+  "mirror-work-red-sequin-scalloped": "",
+  "mirror-work-mehroon-gota-kinari-gold": "",
+  "mirror-work-mehroon-gota-kinari-silver": "",
+  "mirror-work-mehroon-zardozi-border": "",
+  "mirror-work-mehroon-pearl-scalloped": "",
+  "mirror-work-mehroon-sequin-scalloped": "",
+  "mirror-work-rani-pink-gota-kinari-gold": "",
+  "mirror-work-rani-pink-gota-kinari-silver": "",
+  "mirror-work-rani-pink-zardozi-border": "",
+  "mirror-work-rani-pink-pearl-scalloped": "",
+  "mirror-work-rani-pink-sequin-scalloped": "",
+  // ── Sequin Scatter ──
+  "sequin-scatter-red-gota-kinari-gold": "",
+  "sequin-scatter-red-gota-kinari-silver": "",
+  "sequin-scatter-red-zardozi-border": "",
+  "sequin-scatter-red-pearl-scalloped": "",
+  "sequin-scatter-red-sequin-scalloped": "",
+  "sequin-scatter-mehroon-gota-kinari-gold": "",
+  "sequin-scatter-mehroon-gota-kinari-silver": "",
+  "sequin-scatter-mehroon-zardozi-border": "",
+  "sequin-scatter-mehroon-pearl-scalloped": "",
+  "sequin-scatter-mehroon-sequin-scalloped": "",
+  "sequin-scatter-rani-pink-gota-kinari-gold": "",
+  "sequin-scatter-rani-pink-gota-kinari-silver": "",
+  "sequin-scatter-rani-pink-zardozi-border": "",
+  "sequin-scatter-rani-pink-pearl-scalloped": "",
+  "sequin-scatter-rani-pink-sequin-scalloped": "",
 };
 
 export function getPreviewImageKey(patternId: string, colorId: string, laceId: string): string {

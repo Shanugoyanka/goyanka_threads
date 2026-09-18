@@ -1,0 +1,362 @@
+[
+  {
+    "id": "01_red",
+    "design_no": 1,
+    "design": "zardosi_all_over",
+    "color": "red",
+    "filename": "01_zardosi_all_over_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "01_mehroon",
+    "design_no": 1,
+    "design": "zardosi_all_over",
+    "color": "mehroon",
+    "filename": "01_zardosi_all_over_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "01_rani_pink",
+    "design_no": 1,
+    "design": "zardosi_all_over",
+    "color": "rani_pink",
+    "filename": "01_zardosi_all_over_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "02_red",
+    "design_no": 2,
+    "design": "gota_patti_all_over",
+    "color": "red",
+    "filename": "02_gota_patti_all_over_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "02_mehroon",
+    "design_no": 2,
+    "design": "gota_patti_all_over",
+    "color": "mehroon",
+    "filename": "02_gota_patti_all_over_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "02_rani_pink",
+    "design_no": 2,
+    "design": "gota_patti_all_over",
+    "color": "rani_pink",
+    "filename": "02_gota_patti_all_over_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "03_red",
+    "design_no": 3,
+    "design": "mirror_work_shisha",
+    "color": "red",
+    "filename": "03_mirror_work_shisha_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "03_mehroon",
+    "design_no": 3,
+    "design": "mirror_work_shisha",
+    "color": "mehroon",
+    "filename": "03_mirror_work_shisha_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "03_rani_pink",
+    "design_no": 3,
+    "design": "mirror_work_shisha",
+    "color": "rani_pink",
+    "filename": "03_mirror_work_shisha_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "04_red",
+    "design_no": 4,
+    "design": "sequin_scatter",
+    "color": "red",
+    "filename": "04_sequin_scatter_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "04_mehroon",
+    "design_no": 4,
+    "design": "sequin_scatter",
+    "color": "mehroon",
+    "filename": "04_sequin_scatter_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "04_rani_pink",
+    "design_no": 4,
+    "design": "sequin_scatter",
+    "color": "rani_pink",
+    "filename": "04_sequin_scatter_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "05_red",
+    "design_no": 5,
+    "design": "zardosi_gota_patti",
+    "color": "red",
+    "filename": "05_zardosi_gota_patti_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "05_mehroon",
+    "design_no": 5,
+    "design": "zardosi_gota_patti",
+    "color": "mehroon",
+    "filename": "05_zardosi_gota_patti_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "05_rani_pink",
+    "design_no": 5,
+    "design": "zardosi_gota_patti",
+    "color": "rani_pink",
+    "filename": "05_zardosi_gota_patti_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "06_red",
+    "design_no": 6,
+    "design": "zardosi_mirror_work",
+    "color": "red",
+    "filename": "06_zardosi_mirror_work_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "06_mehroon",
+    "design_no": 6,
+    "design": "zardosi_mirror_work",
+    "color": "mehroon",
+    "filename": "06_zardosi_mirror_work_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "06_rani_pink",
+    "design_no": 6,
+    "design": "zardosi_mirror_work",
+    "color": "rani_pink",
+    "filename": "06_zardosi_mirror_work_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "07_red",
+    "design_no": 7,
+    "design": "gota_patti_mirror_work",
+    "color": "red",
+    "filename": "07_gota_patti_mirror_work_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "07_mehroon",
+    "design_no": 7,
+    "design": "gota_patti_mirror_work",
+    "color": "mehroon",
+    "filename": "07_gota_patti_mirror_work_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "07_rani_pink",
+    "design_no": 7,
+    "design": "gota_patti_mirror_work",
+    "color": "rani_pink",
+    "filename": "07_gota_patti_mirror_work_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "08_red",
+    "design_no": 8,
+    "design": "sequin_gota_patti",
+    "color": "red",
+    "filename": "08_sequin_gota_patti_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "08_mehroon",
+    "design_no": 8,
+    "design": "sequin_gota_patti",
+    "color": "mehroon",
+    "filename": "08_sequin_gota_patti_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "08_rani_pink",
+    "design_no": 8,
+    "design": "sequin_gota_patti",
+    "color": "rani_pink",
+    "filename": "08_sequin_gota_patti_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "09_red",
+    "design_no": 9,
+    "design": "zardosi_sequin",
+    "color": "red",
+    "filename": "09_zardosi_sequin_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "09_mehroon",
+    "design_no": 9,
+    "design": "zardosi_sequin",
+    "color": "mehroon",
+    "filename": "09_zardosi_sequin_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "09_rani_pink",
+    "design_no": 9,
+    "design": "zardosi_sequin",
+    "color": "rani_pink",
+    "filename": "09_zardosi_sequin_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "10_red",
+    "design_no": 10,
+    "design": "mirror_sequin",
+    "color": "red",
+    "filename": "10_mirror_sequin_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "10_mehroon",
+    "design_no": 10,
+    "design": "mirror_sequin",
+    "color": "mehroon",
+    "filename": "10_mirror_sequin_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "10_rani_pink",
+    "design_no": 10,
+    "design": "mirror_sequin",
+    "color": "rani_pink",
+    "filename": "10_mirror_sequin_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "11_red",
+    "design_no": 11,
+    "design": "gota_kinari_gold_border",
+    "color": "red",
+    "filename": "11_gota_kinari_gold_border_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "11_mehroon",
+    "design_no": 11,
+    "design": "gota_kinari_gold_border",
+    "color": "mehroon",
+    "filename": "11_gota_kinari_gold_border_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "11_rani_pink",
+    "design_no": 11,
+    "design": "gota_kinari_gold_border",
+    "color": "rani_pink",
+    "filename": "11_gota_kinari_gold_border_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "12_red",
+    "design_no": 12,
+    "design": "gota_kinari_silver_border",
+    "color": "red",
+    "filename": "12_gota_kinari_silver_border_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "12_mehroon",
+    "design_no": 12,
+    "design": "gota_kinari_silver_border",
+    "color": "mehroon",
+    "filename": "12_gota_kinari_silver_border_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "12_rani_pink",
+    "design_no": 12,
+    "design": "gota_kinari_silver_border",
+    "color": "rani_pink",
+    "filename": "12_gota_kinari_silver_border_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "13_red",
+    "design_no": 13,
+    "design": "zardosi_border",
+    "color": "red",
+    "filename": "13_zardosi_border_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "13_mehroon",
+    "design_no": 13,
+    "design": "zardosi_border",
+    "color": "mehroon",
+    "filename": "13_zardosi_border_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "13_rani_pink",
+    "design_no": 13,
+    "design": "zardosi_border",
+    "color": "rani_pink",
+    "filename": "13_zardosi_border_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "14_red",
+    "design_no": 14,
+    "design": "pearl_scalloped_border",
+    "color": "red",
+    "filename": "14_pearl_scalloped_border_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "14_mehroon",
+    "design_no": 14,
+    "design": "pearl_scalloped_border",
+    "color": "mehroon",
+    "filename": "14_pearl_scalloped_border_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "14_rani_pink",
+    "design_no": 14,
+    "design": "pearl_scalloped_border",
+    "color": "rani_pink",
+    "filename": "14_pearl_scalloped_border_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "15_red",
+    "design_no": 15,
+    "design": "sequin_scalloped_border",
+    "color": "red",
+    "filename": "15_sequin_scalloped_border_red.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "15_mehroon",
+    "design_no": 15,
+    "design": "sequin_scalloped_border",
+    "color": "mehroon",
+    "filename": "15_sequin_scalloped_border_mehroon.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  },
+  {
+    "id": "15_rani_pink",
+    "design_no": 15,
+    "design": "sequin_scalloped_border",
+    "color": "rani_pink",
+    "filename": "15_sequin_scalloped_border_rani_pink.jpg",
+    "source": "cropped from uploaded bridal veil collection image"
+  }
+]

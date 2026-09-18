@@ -74,28 +74,42 @@ export default function Preview({ order, onConfirm, onBack }: PreviewProps) {
       {/* Preview image */}
       <div className="max-w-sm mx-auto">
         <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-b from-[#FFF5EE] to-[#F0E6D4] shadow-lg">
-          {/* Image */}
-          {!imageError && imageUrl && (
-            <img
-              src={imageUrl}
-              alt={`${patternName} veil in ${colorData?.name} with ${laceName}`}
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageError(true)}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${
-                imageLoaded ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          )}
+          {imageUrl ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl}
+                alt={`${patternName} veil in ${colorData?.name} with ${laceName}`}
+                onLoad={() => setImageLoaded(true)}
+                onError={() => setImageError(true)}
+                className={`w-full h-full object-cover transition-opacity duration-500 ${
+                  imageLoaded && !imageError ? "opacity-100" : "opacity-0"
+                }`}
+              />
 
-          {/* Loading */}
-          {!imageLoaded && !imageError && imageUrl && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-12 h-12 rounded-full border-4 border-[var(--gold-light)] border-t-[var(--gold)] animate-spin" />
-            </div>
-          )}
+              {/* Loading spinner */}
+              {!imageLoaded && !imageError && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full border-4 border-[var(--gold-light)] border-t-[var(--gold)] animate-spin" />
+                </div>
+              )}
 
-          {/* Error / placeholder */}
-          {(imageError || !imageUrl) && (
+              {/* Image failed to load */}
+              {imageError && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
+                  <span className="text-4xl">⚠️</span>
+                  <p className="text-gray-500 text-sm">Image failed to load</p>
+                  <button
+                    onClick={() => { setImageError(false); setImageLoaded(false); }}
+                    className="text-[var(--gold)] underline text-sm cursor-pointer"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            /* No image URL for this combination */
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
               <span className="text-5xl">👰</span>
               <p className="text-gray-600 font-medium" style={{ fontFamily: "var(--font-playfair), serif" }}>
@@ -112,7 +126,7 @@ export default function Preview({ order, onConfirm, onBack }: PreviewProps) {
                 Preview image coming soon — your selections are saved
               </p>
             </div>
-          )}
+          )
 
           {/* Custom text overlay */}
           {order.customType !== "none" && order.customText && imageLoaded && (

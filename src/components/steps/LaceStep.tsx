@@ -43,10 +43,16 @@ export default function LaceStep({ selected, onSelect }: LaceStepProps) {
                   alt={lace.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
+                    const el = e.target as HTMLImageElement;
+                    el.style.display = "none";
+                    const fallback = el.parentElement?.querySelector(".fallback-emoji");
+                    if (fallback) (fallback as HTMLElement).style.display = "flex";
                   }}
                 />
               ) : null}
+              <div className="fallback-emoji absolute inset-0 items-center justify-center" style={{ display: lace.thumbnail ? "none" : "flex" }}>
+                <span className="text-2xl drop-shadow-sm">{lace.emoji}</span>
+              </div>
               {/* Selected checkmark */}
               {selected === lace.id && (
                 <motion.div
