@@ -18,6 +18,7 @@ export interface LaceOption {
   name: string;
   description: string;
   emoji: string;
+  thumbnail: string;
 }
 
 export interface LengthOption {
@@ -64,11 +65,11 @@ export const colors: ColorOption[] = [
 ];
 
 export const laces: LaceOption[] = [
-  { id: "gota-kinari-gold", name: "Gota Kinari (Gold)", description: "Golden metallic ribbon border", emoji: "🥇" },
-  { id: "gota-kinari-silver", name: "Gota Kinari (Silver)", description: "Silver metallic ribbon border", emoji: "🥈" },
-  { id: "zardozi-border", name: "Zardozi Border", description: "Heavy metallic embroidered border", emoji: "👑" },
-  { id: "pearl-scalloped", name: "Pearl Scalloped", description: "Scalloped border with pearl accents", emoji: "🫧" },
-  { id: "sequin-scalloped", name: "Sequin Scalloped", description: "Shimmering sequin scalloped trim", emoji: "✨" },
+  { id: "gota-kinari-gold", name: "Gota Kinari (Gold)", description: "Golden metallic ribbon border", emoji: "🥇", thumbnail: "/thumbnails/gota-kinari-gold.jpg" },
+  { id: "gota-kinari-silver", name: "Gota Kinari (Silver)", description: "Silver metallic ribbon border", emoji: "🥈", thumbnail: "/thumbnails/gota-kinari-silver.jpg" },
+  { id: "zardozi-border", name: "Zardozi Border", description: "Heavy metallic embroidered border", emoji: "👑", thumbnail: "/thumbnails/zardozi-border.jpg" },
+  { id: "pearl-scalloped", name: "Pearl Scalloped", description: "Scalloped border with pearl accents", emoji: "🫧", thumbnail: "/thumbnails/pearl-scalloped.jpg" },
+  { id: "sequin-scalloped", name: "Sequin Scalloped", description: "Shimmering sequin scalloped trim", emoji: "✨", thumbnail: "/thumbnails/sequin-scalloped.jpg" },
 ];
 
 export const lengths: LengthOption[] = [

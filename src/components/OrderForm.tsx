@@ -8,6 +8,7 @@ import {
   laces,
   lengths,
   VeilOrder,
+  getPreviewImageUrl,
 } from "@/data/veilOptions";
 
 interface OrderFormProps {
@@ -36,6 +37,10 @@ export default function OrderForm({ order, onBack }: OrderFormProps) {
       msg += `• Customization: "${order.customText}" (${order.customType})\n`;
     }
     msg += `\n📍 *Delivery Address:*\n${address}\n`;
+    const imageUrl = getPreviewImageUrl(order.pattern, order.color, order.lace);
+    if (imageUrl) {
+      msg += `\n🖼️ *Preview:*\n${imageUrl}\n`;
+    }
     msg += `\n✨ Thank you for choosing Goyanka Threads!`;
     return msg;
   };

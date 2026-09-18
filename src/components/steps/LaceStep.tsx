@@ -29,34 +29,46 @@ export default function LaceStep({ selected, onSelect }: LaceStepProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.06 }}
             onClick={() => onSelect(lace.id)}
-            className={`option-card p-4 rounded-xl border-2 text-left cursor-pointer ${
+            className={`option-card rounded-2xl border-2 text-center cursor-pointer overflow-hidden ${
               selected === lace.id
                 ? "selected"
                 : "border-gray-200 hover:border-[var(--gold-light)] bg-white"
             }`}
           >
-            <div className="flex items-start gap-2.5">
-              <span className="text-2xl">{lace.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-sm text-[var(--foreground)] leading-tight">
-                  {lace.name}
-                </h3>
-                <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                  {lace.description}
-                </p>
-              </div>
+            {/* Lace thumbnail */}
+            <div className="aspect-[2/1] bg-gradient-to-b from-[#FFF5EE] to-[#F0E6D4] relative overflow-hidden">
+              {lace.thumbnail ? (
+                <img
+                  src={lace.thumbnail}
+                  alt={lace.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              ) : null}
+              {/* Selected checkmark */}
+              {selected === lace.id && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[var(--gold)] flex items-center justify-center shadow-md"
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                </motion.div>
+              )}
             </div>
-            {selected === lace.id && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--gold)] flex items-center justify-center"
-              >
-                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              </motion.div>
-            )}
+            {/* Label */}
+            <div className="p-2.5">
+              <h3 className="font-semibold text-sm text-[var(--foreground)]">
+                {lace.name}
+              </h3>
+              <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+                {lace.description}
+              </p>
+            </div>
           </motion.button>
         ))}
       </div>
