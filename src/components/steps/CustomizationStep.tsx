@@ -57,16 +57,16 @@ export default function CustomizationStep({
   return (
     <div>
       <h2
-        className="text-2xl md:text-3xl font-bold text-center mb-2"
+        className="text-xl md:text-3xl font-bold text-center mb-1"
         style={{ fontFamily: "var(--font-playfair), serif" }}
       >
         Add a Personal Touch
       </h2>
-      <p className="text-center text-gray-500 mb-10 text-sm md:text-base">
+      <p className="text-center text-gray-500 mb-6 text-xs md:text-base">
         Make it uniquely yours with custom embroidery
       </p>
 
-      <div className="max-w-2xl mx-auto space-y-4">
+      <div className="max-w-lg mx-auto space-y-3">
         {customOptions.map((option, index) => (
           <motion.button
             key={option.id}
@@ -77,7 +77,7 @@ export default function CustomizationStep({
               onTypeChange(option.id);
               if (option.id === "none") onTextChange("");
             }}
-            className={`option-card w-full p-5 rounded-xl border-2 text-left cursor-pointer ${
+            className={`option-card w-full p-4 rounded-xl border-2 text-left cursor-pointer ${
               customType === option.id
                 ? "selected"
                 : "border-gray-200 hover:border-[var(--gold-light)] bg-white"
@@ -112,7 +112,7 @@ export default function CustomizationStep({
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          className="max-w-2xl mx-auto mt-6"
+          className="max-w-lg mx-auto mt-4"
         >
           <div className="relative">
             <input
