@@ -242,7 +242,15 @@ export default function EnquiryForm({
               animate={{ opacity: 1, y: 0 }}
               className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3"
             >
-              {error}
+              <p>{error}</p>
+              <a
+                href="https://wa.me/917223864040?text=Hi%2C%20I%20was%20browsing%20veils%20on%20your%20website%20and%20would%20like%20to%20enquire."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 text-green-700 font-semibold underline text-xs"
+              >
+                Or message us directly on WhatsApp →
+              </a>
             </motion.div>
           )}
 

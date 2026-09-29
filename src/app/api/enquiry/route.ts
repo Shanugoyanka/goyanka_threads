@@ -175,9 +175,23 @@ export async function POST(req: NextRequest) {
       enquiryId: enquiry.id,
     });
   } catch (error) {
-    console.error("Enquiry submission error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Enquiry submission error:", message);
+
+    // Detect common DB issues and give a useful message
+    const isDbError =
+      message.includes("Can't reach database") ||
+      message.includes("connect") ||
+      message.includes("ECONNREFUSED") ||
+      message.includes("prisma") ||
+      message.includes("P1001");
+
     return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
+      {
+        error: isDbError
+          ? "Our system is temporarily unable to save enquiries. Please try again in a moment or reach out on WhatsApp directly."
+          : "Something went wrong. Please try again.",
+      },
       { status: 500 }
     );
   }
