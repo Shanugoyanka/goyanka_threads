@@ -7,6 +7,7 @@ import {
   styleOptions,
   colourOptions,
   budgetOptions,
+  personalizationOptions,
 } from "@/data/discoverOptions";
 import ProductCard from "./ProductCard";
 import ProductDetail from "./ProductDetail";
@@ -31,6 +32,9 @@ function getStyleLabel(id: string) {
 }
 function getBudgetLabel(id: string) {
   return budgetOptions.find((b) => b.id === id)?.label ?? id;
+}
+function getPersonalizationLabel(id: string) {
+  return personalizationOptions.find((p) => p.id === id)?.label ?? id;
 }
 
 export default function ProductResults({
@@ -106,21 +110,11 @@ export default function ProductResults({
             style={{ fontFamily: "var(--font-playfair), serif" }}
           >
             {hasBestMatches
-              ? "Veils we found for your bridal look"
+              ? "Your veil matches ✨"
               : "Styles that may complement your bridal look"}
           </h2>
           <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">
-            {preferences.outfitColour && preferences.outfitColour !== "other"
-              ? `Based on your ${colourName.toLowerCase()} outfit`
-              : "Based on your preferences"}
-            {preferences.preferredStyle && preferences.preferredStyle !== "not-sure"
-              ? `, ${styleName.toLowerCase()} style`
-              : ""}
-            {preferences.budgetRange && preferences.budgetRange !== "flexible"
-              ? ` and ${getBudgetLabel(preferences.budgetRange).toLowerCase()} budget`
-              : ""}
-            {" — "}
-            {totalResults} veil{totalResults !== 1 ? "s" : ""} to explore.
+            Based on your bridal look, we found these styles for you.
           </p>
         </motion.div>
 
@@ -185,11 +179,8 @@ export default function ProductResults({
                     {preferences.weddingDate && (
                       <PrefItem label="Wedding date" value={preferences.weddingDate} />
                     )}
-                    {preferences.city && (
-                      <PrefItem
-                        label="Location"
-                        value={`${preferences.city}${preferences.pincode ? ` — ${preferences.pincode}` : ""}`}
-                      />
+                    {preferences.weddingDateNotFixed && (
+                      <PrefItem label="Wedding date" value="Not fixed yet" />
                     )}
                     {preferences.outfitColour && (
                       <PrefItem label="Outfit colour" value={colourName} />
@@ -199,6 +190,9 @@ export default function ProductResults({
                     )}
                     {preferences.budgetRange && (
                       <PrefItem label="Budget" value={getBudgetLabel(preferences.budgetRange)} />
+                    )}
+                    {preferences.personalization && preferences.personalization !== "none" && (
+                      <PrefItem label="Personalization" value={getPersonalizationLabel(preferences.personalization)} />
                     )}
                   </div>
                   <button
@@ -304,7 +298,7 @@ export default function ProductResults({
                 onClick={onProceedToEnquiry}
                 className="flex-shrink-0 px-5 py-2.5 bg-gradient-to-r from-[var(--gold)] to-[var(--accent)] text-white rounded-full font-semibold shadow-lg hover:shadow-xl transition-shadow cursor-pointer text-sm flex items-center gap-1.5"
               >
-                Enquire Now
+                Talk to our designer
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>

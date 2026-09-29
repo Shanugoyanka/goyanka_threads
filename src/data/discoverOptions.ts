@@ -1,10 +1,11 @@
 export interface PreferenceAnswers {
   weddingDate: string;
-  city: string;
-  pincode: string;
+  weddingDateNotFixed: boolean;
   outfitColour: string;
+  customOutfitColour: string;
   preferredStyle: string;
   budgetRange: string;
+  personalization: string;
 }
 
 export const styleOptions = [
@@ -38,9 +39,10 @@ export const colourOptions = [
   { id: "red", name: "Red", hex: "#C41E3A" },
   { id: "maroon", name: "Maroon", hex: "#800020" },
   { id: "pink", name: "Pink", hex: "#E4007C" },
-  { id: "ivory", name: "Ivory / Pastel", hex: "#FFFFF0" },
+  { id: "pastel", name: "Pastel", hex: "#F8D7DA" },
+  { id: "ivory", name: "Ivory / White", hex: "#FFFFF0" },
   { id: "gold", name: "Gold", hex: "#C5A55A" },
-  { id: "other", name: "Other / Not decided", hex: "#9CA3AF" },
+  { id: "other", name: "Other", hex: "#9CA3AF" },
 ];
 
 export const budgetOptions = [
@@ -48,7 +50,16 @@ export const budgetOptions = [
   { id: "3000-4000", label: "₹3,000 – ₹4,000", min: 3000, max: 4000 },
   { id: "4000-5000", label: "₹4,000 – ₹5,000", min: 4000, max: 5000 },
   { id: "above-5000", label: "Above ₹5,000", min: 5000, max: 15000 },
-  { id: "flexible", label: "Flexible / Not decided", min: 0, max: 50000 },
+  { id: "flexible", label: "Help Me Choose", min: 0, max: 50000 },
+];
+
+export const personalizationOptions = [
+  { id: "none", label: "No personalization", emoji: "✋" },
+  { id: "names", label: "Bride / Groom names", emoji: "💑" },
+  { id: "date", label: "Wedding date", emoji: "📅" },
+  { id: "names-date", label: "Names + wedding date", emoji: "💍" },
+  { id: "custom-text", label: "Custom text / mantra", emoji: "✍️" },
+  { id: "not-sure", label: "Not sure yet", emoji: "🤔" },
 ];
 
 export function getBudgetRange(budgetId: string) {

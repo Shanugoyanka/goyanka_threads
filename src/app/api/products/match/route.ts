@@ -6,13 +6,13 @@ interface MatchRequest {
   budgetMax?: number;
   preferredStyle?: string;
   outfitColour?: string;
-  wantsCustomization?: boolean;
+  personalization?: string;
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body: MatchRequest = await req.json();
-    const { budgetMin, budgetMax, preferredStyle, outfitColour } = body;
+    const { budgetMin, budgetMax, preferredStyle, outfitColour, personalization } = body;
 
     const allProducts = await prisma.product.findMany({
       where: { status: { not: "discontinued" } },
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
         if (matchCount >= 2) score += 4;
         else if (matchCount === 1) score += 2;
       } else {
-        score += 2; // "not sure" — everyone gets baseline
+        score += 2;
       }
 
       // ── Budget match: 0–4 pts (strong signal) ──
@@ -51,20 +51,16 @@ export async function POST(req: NextRequest) {
         const prodMin = product.minPrice ?? product.basePrice;
         const prodMax = product.maxPrice ?? product.basePrice;
 
-        // Full overlap: product range intersects customer range
         if (prodMin <= budgetMax && prodMax >= budgetMin) {
           score += 3;
-          // Bonus if base price is right in their range
           if (product.basePrice >= budgetMin && product.basePrice <= budgetMax) {
             score += 1;
           }
-        }
-        // Near miss: product is within 25% above their max
-        else if (prodMin <= budgetMax * 1.25) {
+        } else if (prodMin <= budgetMax * 1.25) {
           score += 1;
         }
       } else {
-        score += 2; // no budget — partial credit
+        score += 2;
       }
 
       // ── Colour match: 0–3 pts (medium signal) ──
@@ -72,24 +68,35 @@ export async function POST(req: NextRequest) {
         if (colours.includes(outfitColour)) {
           score += 3;
         }
-        // Partial: ivory/pastel customers also match pink
+        // Cross-matching: pastel ↔ pink ↔ ivory
         else if (
-          (outfitColour === "ivory" && colours.includes("pink")) ||
-          (outfitColour === "pink" && colours.includes("ivory"))
+          (outfitColour === "ivory" && (colours.includes("pink") || colours.includes("pastel"))) ||
+          (outfitColour === "pink" && (colours.includes("ivory") || colours.includes("pastel"))) ||
+          (outfitColour === "pastel" && (colours.includes("pink") || colours.includes("ivory")))
         ) {
           score += 1;
         }
       } else {
-        score += 1; // no colour pref — small baseline
+        score += 1;
       }
 
-      // ── Customization availability: 0–2 pts ──
-      if (preferredStyle === "personalized") {
-        // Personalized style strongly values customization depth
+      // ── Personalization match: 0–2 pts ──
+      if (personalization && personalization !== "none" && personalization !== "not-sure") {
+        const personalMap: Record<string, string[]> = {
+          names: ["name", "initials"],
+          date: ["date"],
+          "names-date": ["name", "initials", "date"],
+          "custom-text": ["custom-text", "custom"],
+        };
+        const wanted = personalMap[personalization] ?? [];
+        const matchCount = wanted.filter((w) => customOpts.includes(w)).length;
+        if (matchCount >= 2) score += 2;
+        else if (matchCount >= 1) score += 1;
+      } else if (preferredStyle === "personalized") {
         if (customOpts.length >= 4) score += 2;
         else if (customOpts.length >= 2) score += 1;
       } else {
-        score += 1; // non-personalized — baseline
+        score += 1;
       }
 
       // ── Availability bonus: 0–1 pt ──
@@ -113,7 +120,6 @@ export async function POST(req: NextRequest) {
       return { ...product, matchScore: score, matchTier, matchLabel };
     });
 
-    // Sort: best first, then by score desc, then featured first
     scored.sort((a, b) => {
       const tierOrder = { best: 0, "also-like": 1 };
       if (tierOrder[a.matchTier] !== tierOrder[b.matchTier]) {
@@ -127,10 +133,11 @@ export async function POST(req: NextRequest) {
     const bestMatches = scored.filter((p) => p.matchTier === "best");
     const alsoLike = scored.filter((p) => p.matchTier === "also-like");
 
-    // If no best matches, promote top also-likes
     if (bestMatches.length === 0 && alsoLike.length > 0) {
       const promoted = alsoLike.splice(0, Math.min(4, alsoLike.length));
-      bestMatches.push(...promoted.map((p) => ({ ...p, matchTier: "best" as const })));
+      bestMatches.push(
+        ...promoted.map((p) => ({ ...p, matchTier: "best" as const }))
+      );
     }
 
     return NextResponse.json({
@@ -141,7 +148,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error("Product match error:", message, error);
+    console.error("Product match error:", message);
     return NextResponse.json(
       {
         error: "Failed to find matching products",

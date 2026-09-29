@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-function generateEnquiryNumber(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
+async function getNextEnquiryNumber(): Promise<string> {
+  const enquiries = await prisma.enquiry.findMany({
+    select: { enquiryNumber: true },
+    where: { enquiryNumber: { startsWith: "GT-" } },
+  });
+
+  let maxNum = 1000;
+  for (const e of enquiries) {
+    const match = e.enquiryNumber.match(/^GT-(\d+)$/);
+    if (match) {
+      const n = parseInt(match[1]);
+      if (n > maxNum) maxNum = n;
+    }
   }
-  return `GT-${code}`;
+  return `GT-${maxNum + 1}`;
 }
 
 function validateWhatsApp(num: string): boolean {
@@ -23,18 +31,25 @@ export async function POST(req: NextRequest) {
       customerName,
       whatsappNumber,
       weddingDate,
-      city,
-      pincode,
+      weddingDateNotFixed,
       outfitColour,
+      customOutfitColour,
       preferredStyle,
       budgetMin,
       budgetMax,
+      personalization,
       productIds,
+      source,
+      campaign,
       idempotencyKey,
     } = body;
 
     // Validate required fields
-    if (!customerName || typeof customerName !== "string" || customerName.trim().length < 2) {
+    if (
+      !customerName ||
+      typeof customerName !== "string" ||
+      customerName.trim().length < 2
+    ) {
       return NextResponse.json(
         { error: "Please provide your name (at least 2 characters)." },
         { status: 400 }
@@ -55,18 +70,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Duplicate prevention: check if same phone + same products submitted in last 5 minutes
+    const cleanedPhone = whatsappNumber.replace(/[\s\-()]/g, "");
+
+    // Duplicate prevention
     if (idempotencyKey) {
       const recent = await prisma.enquiry.findFirst({
         where: {
-          whatsappNumber: whatsappNumber.replace(/[\s\-()]/g, ""),
+          whatsappNumber: cleanedPhone,
           submittedAt: { gte: new Date(Date.now() - 5 * 60 * 1000) },
         },
         include: { selectedProducts: true },
         orderBy: { submittedAt: "desc" },
       });
       if (recent) {
-        const recentProductIds = recent.selectedProducts.map((sp) => sp.productId).sort();
+        const recentProductIds = recent.selectedProducts
+          .map((sp) => sp.productId)
+          .sort();
         const newProductIds = [...productIds].sort();
         if (JSON.stringify(recentProductIds) === JSON.stringify(newProductIds)) {
           return NextResponse.json({
@@ -90,28 +109,57 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const enquiryNumber = generateEnquiryNumber();
+    // Sanitize source/campaign — only allow safe short strings
+    const cleanSource =
+      typeof source === "string" ? source.slice(0, 50).replace(/[^\w\-]/g, "") : null;
+    const cleanCampaign =
+      typeof campaign === "string" ? campaign.slice(0, 100).replace(/[^\w\-]/g, "") : null;
 
-    const enquiry = await prisma.enquiry.create({
-      data: {
-        enquiryNumber,
-        status: "NEW",
-        customerName: customerName.trim(),
-        whatsappNumber: whatsappNumber.replace(/[\s\-()]/g, ""),
-        weddingDate: weddingDate || null,
-        city: city || null,
-        pincode: pincode || null,
-        outfitColour: outfitColour || null,
-        preferredStyle: preferredStyle || null,
-        budgetMin: budgetMin ?? null,
-        budgetMax: budgetMax ?? null,
-        selectedProducts: {
-          create: productIds.map((productId: string) => ({
-            productId,
-          })),
-        },
-      },
-    });
+    // Generate sequential enquiry number with retry for uniqueness
+    let enquiry = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const enquiryNumber = await getNextEnquiryNumber();
+        enquiry = await prisma.enquiry.create({
+          data: {
+            enquiryNumber,
+            status: "NEW",
+            customerName: customerName.trim(),
+            whatsappNumber: cleanedPhone,
+            weddingDate: weddingDate || null,
+            weddingDateNotFixed: weddingDateNotFixed === true,
+            outfitColour: outfitColour || null,
+            customOutfitColour:
+              typeof customOutfitColour === "string"
+                ? customOutfitColour.trim().slice(0, 50)
+                : null,
+            preferredStyle: preferredStyle || null,
+            budgetMin: budgetMin ?? null,
+            budgetMax: budgetMax ?? null,
+            personalization: personalization || null,
+            source: cleanSource || null,
+            campaign: cleanCampaign || null,
+            selectedProducts: {
+              create: productIds.map((productId: string) => ({
+                productId,
+              })),
+            },
+          },
+        });
+        break;
+      } catch (e: unknown) {
+        const prismaError = e as { code?: string };
+        if (prismaError.code === "P2002" && attempt < 2) continue;
+        throw e;
+      }
+    }
+
+    if (!enquiry) {
+      return NextResponse.json(
+        { error: "Could not create enquiry. Please try again." },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,

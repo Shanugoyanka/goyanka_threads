@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { PreferenceAnswers, getBudgetRange, styleOptions, colourOptions } from "@/data/discoverOptions";
+import { PreferenceAnswers, getBudgetRange, styleOptions, colourOptions, personalizationOptions } from "@/data/discoverOptions";
 import { MatchedProduct, getPriceDisplay } from "./types";
 
 interface EnquiryFormProps {
   preferences: PreferenceAnswers;
   selectedProducts: MatchedProduct[];
+  source?: string | null;
+  campaign?: string | null;
   onBack: () => void;
   onSuccess: (enquiryNumber: string) => void;
 }
@@ -15,6 +17,8 @@ interface EnquiryFormProps {
 export default function EnquiryForm({
   preferences,
   selectedProducts,
+  source,
+  campaign,
   onBack,
   onSuccess,
 }: EnquiryFormProps) {
@@ -30,6 +34,9 @@ export default function EnquiryForm({
   const colourName =
     colourOptions.find((c) => c.id === preferences.outfitColour)?.name ??
     preferences.outfitColour;
+  const personalizationName =
+    personalizationOptions.find((p) => p.id === preferences.personalization)?.label ??
+    preferences.personalization;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,13 +63,16 @@ export default function EnquiryForm({
           customerName: name.trim(),
           whatsappNumber: cleanedPhone,
           weddingDate: preferences.weddingDate || null,
-          city: preferences.city || null,
-          pincode: preferences.pincode || null,
+          weddingDateNotFixed: preferences.weddingDateNotFixed,
           outfitColour: preferences.outfitColour || null,
+          customOutfitColour: preferences.customOutfitColour || null,
           preferredStyle: preferences.preferredStyle || null,
           budgetMin: budget.min,
           budgetMax: budget.max,
+          personalization: preferences.personalization || null,
           productIds: selectedProducts.map((p) => p.id),
+          source: source || null,
+          campaign: campaign || null,
           idempotencyKey: `${cleanedPhone}-${Date.now()}`,
         }),
       });
@@ -97,16 +107,21 @@ export default function EnquiryForm({
               className="text-sm md:text-lg font-bold text-[var(--foreground)] leading-tight"
               style={{ fontFamily: "var(--font-playfair), serif" }}
             >
-              Almost There!
+              Almost there ❤️
             </h1>
             <p className="text-[10px] md:text-xs text-[var(--gold)]">
-              Tell us how to reach you
+              Share your details to connect with our bridal team
             </p>
           </div>
         </div>
       </header>
 
       <main className="flex-1 max-w-lg mx-auto w-full px-4 py-6">
+        {/* Intro copy */}
+        <p className="text-sm text-gray-500 mb-5 leading-relaxed">
+          Share your details and our bridal team will help you with the selected designs, customization and final details.
+        </p>
+
         {/* Preference summary */}
         <div className="glass-card rounded-xl p-4 mb-5">
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
@@ -115,31 +130,30 @@ export default function EnquiryForm({
           <div className="grid grid-cols-2 gap-2 text-sm">
             {preferences.weddingDate && (
               <div>
-                <span className="text-[10px] text-gray-400 block">
-                  Wedding Date
-                </span>
+                <span className="text-[10px] text-gray-400 block">Wedding Date</span>
                 <span className="font-medium">{preferences.weddingDate}</span>
               </div>
             )}
-            {preferences.city && (
+            {preferences.weddingDateNotFixed && (
               <div>
-                <span className="text-[10px] text-gray-400 block">City</span>
-                <span className="font-medium">
-                  {preferences.city}
-                  {preferences.pincode ? ` - ${preferences.pincode}` : ""}
-                </span>
+                <span className="text-[10px] text-gray-400 block">Wedding Date</span>
+                <span className="font-medium">Not fixed yet</span>
               </div>
             )}
             <div>
-              <span className="text-[10px] text-gray-400 block">
-                Outfit Colour
-              </span>
+              <span className="text-[10px] text-gray-400 block">Outfit Colour</span>
               <span className="font-medium">{colourName}</span>
             </div>
             <div>
               <span className="text-[10px] text-gray-400 block">Style</span>
               <span className="font-medium">{styleName}</span>
             </div>
+            {preferences.personalization && preferences.personalization !== "none" && (
+              <div>
+                <span className="text-[10px] text-gray-400 block">Personalization</span>
+                <span className="font-medium">{personalizationName}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -253,7 +267,7 @@ export default function EnquiryForm({
                   Sending...
                 </>
               ) : (
-                "Submit Enquiry 💌"
+                "Send My Enquiry 💌"
               )}
             </motion.button>
           </div>

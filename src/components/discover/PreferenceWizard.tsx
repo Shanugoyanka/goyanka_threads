@@ -7,6 +7,7 @@ import {
   styleOptions,
   colourOptions,
   budgetOptions,
+  personalizationOptions,
 } from "@/data/discoverOptions";
 
 interface PreferenceWizardProps {
@@ -15,7 +16,7 @@ interface PreferenceWizardProps {
 }
 
 const TOTAL_STEPS = 5;
-const stepNames = ["Wedding Date", "Location", "Colour", "Style", "Budget"];
+const stepNames = ["Date", "Colour", "Style", "Budget", "Personal"];
 
 export default function PreferenceWizard({
   onComplete,
@@ -26,11 +27,12 @@ export default function PreferenceWizard({
   const [answers, setAnswers] = useState<PreferenceAnswers>(
     initialAnswers ?? {
       weddingDate: "",
-      city: "",
-      pincode: "",
+      weddingDateNotFixed: false,
       outfitColour: "",
+      customOutfitColour: "",
       preferredStyle: "",
       budgetRange: "",
+      personalization: "",
     }
   );
 
@@ -39,13 +41,13 @@ export default function PreferenceWizard({
       case 0:
         return true; // wedding date is optional
       case 1:
-        return true; // location is optional
-      case 2:
         return answers.outfitColour !== "";
-      case 3:
+      case 2:
         return answers.preferredStyle !== "";
-      case 4:
+      case 3:
         return answers.budgetRange !== "";
+      case 4:
+        return answers.personalization !== "";
       default:
         return true;
     }
@@ -96,6 +98,7 @@ export default function PreferenceWizard({
             </div>
           </div>
 
+          {/* Progress dots */}
           <div className="flex items-center gap-1.5">
             {stepNames.map((name, i) => (
               <div key={i} className="flex items-center">
@@ -151,65 +154,47 @@ export default function PreferenceWizard({
             exit="exit"
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
+            {/* STEP 1: Wedding Date */}
             {step === 0 && (
               <StepLayout
-                title="When's the big day?"
+                title="When is your big day? 💍"
                 subtitle="This helps us check delivery timelines"
               >
                 <div className="max-w-sm mx-auto">
-                  <input
-                    type="date"
-                    value={answers.weddingDate}
-                    onChange={(e) =>
-                      setAnswers({ ...answers, weddingDate: e.target.value })
-                    }
-                    min={new Date().toISOString().split("T")[0]}
-                    className="w-full px-5 py-4 rounded-xl border-2 border-gray-200 bg-white text-[var(--foreground)] text-lg focus:outline-none focus:border-[var(--gold)] transition-colors"
-                  />
-                  <p className="text-xs text-gray-400 mt-2 text-center">
-                    Not decided yet? That&apos;s okay — skip this step
-                  </p>
-                </div>
-              </StepLayout>
-            )}
-
-            {step === 1 && (
-              <StepLayout
-                title="Where's the celebration?"
-                subtitle="City and pincode help with delivery estimates"
-              >
-                <div className="max-w-sm mx-auto space-y-3">
-                  <input
-                    type="text"
-                    placeholder="City (e.g. Jaipur)"
-                    value={answers.city}
-                    onChange={(e) =>
-                      setAnswers({ ...answers, city: e.target.value })
-                    }
-                    className="w-full px-5 py-3 rounded-xl border-2 border-gray-200 bg-white text-[var(--foreground)] focus:outline-none focus:border-[var(--gold)] transition-colors placeholder:text-gray-400"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Pincode (e.g. 302001)"
-                    value={answers.pincode}
-                    onChange={(e) =>
+                  {!answers.weddingDateNotFixed && (
+                    <input
+                      type="date"
+                      value={answers.weddingDate}
+                      onChange={(e) =>
+                        setAnswers({ ...answers, weddingDate: e.target.value, weddingDateNotFixed: false })
+                      }
+                      min={new Date().toISOString().split("T")[0]}
+                      className="w-full px-5 py-4 rounded-xl border-2 border-gray-200 bg-white text-[var(--foreground)] text-lg focus:outline-none focus:border-[var(--gold)] transition-colors"
+                    />
+                  )}
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() =>
                       setAnswers({
                         ...answers,
-                        pincode: e.target.value.replace(/\D/g, "").slice(0, 6),
+                        weddingDateNotFixed: !answers.weddingDateNotFixed,
+                        weddingDate: !answers.weddingDateNotFixed ? "" : answers.weddingDate,
                       })
                     }
-                    inputMode="numeric"
-                    maxLength={6}
-                    className="w-full px-5 py-3 rounded-xl border-2 border-gray-200 bg-white text-[var(--foreground)] focus:outline-none focus:border-[var(--gold)] transition-colors placeholder:text-gray-400"
-                  />
-                  <p className="text-xs text-gray-400 text-center">
-                    Optional — skip if you&apos;re not sure yet
-                  </p>
+                    className={`w-full mt-3 px-5 py-3.5 rounded-xl border-2 text-sm font-medium cursor-pointer transition-all ${
+                      answers.weddingDateNotFixed
+                        ? "border-[var(--gold)] bg-[var(--gold-light)]/50 text-[var(--gold)]"
+                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                    }`}
+                  >
+                    {answers.weddingDateNotFixed ? "✓ " : ""}Date not fixed yet
+                  </motion.button>
                 </div>
               </StepLayout>
             )}
 
-            {step === 2 && (
+            {/* STEP 2: Outfit Colour */}
+            {step === 1 && (
               <StepLayout
                 title="What colour is your bridal outfit?"
                 subtitle="We'll find veils that complement your look"
@@ -220,9 +205,13 @@ export default function PreferenceWizard({
                       key={colour.id}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.1, type: "spring" }}
+                      transition={{ delay: index * 0.08, type: "spring" }}
                       onClick={() =>
-                        setAnswers({ ...answers, outfitColour: colour.id })
+                        setAnswers({
+                          ...answers,
+                          outfitColour: colour.id,
+                          customOutfitColour: colour.id !== "other" ? "" : answers.customOutfitColour,
+                        })
                       }
                       className={`option-card rounded-2xl border-2 p-4 cursor-pointer flex flex-col items-center gap-3 ${
                         answers.outfitColour === colour.id
@@ -248,7 +237,7 @@ export default function PreferenceWizard({
                               className="w-7 h-7"
                               fill="none"
                               viewBox="0 0 24 24"
-                              stroke="white"
+                              stroke={colour.id === "ivory" || colour.id === "gold" ? "#333" : "white"}
                             >
                               <path
                                 strokeLinecap="round"
@@ -266,12 +255,35 @@ export default function PreferenceWizard({
                     </motion.button>
                   ))}
                 </div>
+                {/* Other colour text input */}
+                <AnimatePresence>
+                  {answers.outfitColour === "other" && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="max-w-sm mx-auto mt-4"
+                    >
+                      <input
+                        type="text"
+                        placeholder="What colour? (optional)"
+                        value={answers.customOutfitColour}
+                        onChange={(e) =>
+                          setAnswers({ ...answers, customOutfitColour: e.target.value.slice(0, 30) })
+                        }
+                        maxLength={30}
+                        className="w-full px-5 py-3 rounded-xl border-2 border-gray-200 bg-white text-[var(--foreground)] focus:outline-none focus:border-[var(--gold)] transition-colors placeholder:text-gray-400 text-sm"
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </StepLayout>
             )}
 
-            {step === 3 && (
+            {/* STEP 3: Style */}
+            {step === 2 && (
               <StepLayout
-                title="What style are you drawn to?"
+                title="What kind of veil are you dreaming of?"
                 subtitle="Pick the vibe that suits your wedding"
               >
                 <div className="max-w-lg mx-auto space-y-3">
@@ -328,9 +340,10 @@ export default function PreferenceWizard({
               </StepLayout>
             )}
 
-            {step === 4 && (
+            {/* STEP 4: Budget */}
+            {step === 3 && (
               <StepLayout
-                title="What's your budget?"
+                title="What's your preferred budget?"
                 subtitle="All our veils are handcrafted with premium materials"
               >
                 <div className="max-w-lg mx-auto space-y-3">
@@ -357,6 +370,63 @@ export default function PreferenceWizard({
                           </h3>
                         </div>
                         {answers.budgetRange === budget.id && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-6 h-6 rounded-full bg-[var(--gold)] flex items-center justify-center flex-shrink-0"
+                          >
+                            <svg
+                              className="w-4 h-4 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </motion.div>
+                        )}
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+              </StepLayout>
+            )}
+
+            {/* STEP 5: Personalization */}
+            {step === 4 && (
+              <StepLayout
+                title="Would you like it personalized?"
+                subtitle="Add names, dates or custom text to your veil"
+              >
+                <div className="max-w-lg mx-auto space-y-3">
+                  {personalizationOptions.map((option, index) => (
+                    <motion.button
+                      key={option.id}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.08 }}
+                      onClick={() =>
+                        setAnswers({ ...answers, personalization: option.id })
+                      }
+                      className={`option-card w-full p-4 rounded-xl border-2 text-left cursor-pointer ${
+                        answers.personalization === option.id
+                          ? "selected"
+                          : "border-gray-200 hover:border-[var(--gold-light)] bg-white"
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <span className="text-2xl">{option.emoji}</span>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-[var(--foreground)]">
+                            {option.label}
+                          </h3>
+                        </div>
+                        {answers.personalization === option.id && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}

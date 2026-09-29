@@ -81,7 +81,7 @@ export default function Home() {
           className="mt-6"
         >
           <Link
-            href="/discover"
+            href="/veil"
             className="inline-block px-8 py-3 border-2 border-[var(--gold)] text-[var(--gold)] rounded-full font-semibold text-base hover:bg-[var(--gold)] hover:text-white transition-all"
           >
             Find Your Perfect Veil 👰

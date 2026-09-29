@@ -1,14 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { MatchedProduct } from "./types";
 
 interface ConfirmationProps {
   enquiryNumber: string;
+  selectedProducts?: MatchedProduct[];
   onStartOver: () => void;
 }
 
 export default function Confirmation({
   enquiryNumber,
+  selectedProducts = [],
   onStartOver,
 }: ConfirmationProps) {
   return (
@@ -43,22 +46,22 @@ export default function Confirmation({
           className="text-2xl md:text-3xl font-bold mb-2"
           style={{ fontFamily: "var(--font-playfair), serif" }}
         >
-          Enquiry Submitted! 🎉
+          Your enquiry is with our bridal team ❤️
         </h2>
 
-        <p className="text-gray-500 mb-4 text-sm">
-          Our team will review your preferences and reach out on WhatsApp with
-          personalised options and pricing.
+        <p className="text-gray-500 mb-5 text-sm leading-relaxed">
+          Someone from Goyanka Threads will connect with you on WhatsApp to help
+          with your selected veil{selectedProducts.length > 1 ? "s" : ""}.
         </p>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="glass-card rounded-xl p-4 mb-6 inline-block"
+          className="glass-card rounded-xl p-4 mb-5 inline-block"
         >
           <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">
-            Your Enquiry ID
+            Enquiry Number
           </p>
           <p
             className="text-lg font-bold text-[var(--gold)] tracking-widest"
@@ -68,12 +71,39 @@ export default function Confirmation({
           </p>
         </motion.div>
 
-        <div className="space-y-3">
-          <p className="text-xs text-gray-400">
-            Save this ID for reference. We typically respond within 2-4 hours
-            during business hours.
-          </p>
+        {/* Selected veil thumbnails */}
+        {selectedProducts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="flex justify-center gap-2 mb-5 flex-wrap"
+          >
+            {selectedProducts.map((product) => {
+              const img = (product.imageUrls)[0];
+              return (
+                <div
+                  key={product.id}
+                  className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 border-2 border-[var(--gold-light)]"
+                >
+                  {img ? (
+                    <img
+                      src={img}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-sm">
+                      👰
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </motion.div>
+        )}
 
+        <div className="space-y-3">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

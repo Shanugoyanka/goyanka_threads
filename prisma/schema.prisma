@@ -41,21 +41,31 @@ model Product {
 // ── Customer Enquiry ──
 
 model Enquiry {
-  id              String   @id @default(cuid())
-  enquiryNumber   String   @unique // human-readable: GT-XXXXXX
-  status          String   @default("NEW") // NEW | CONTACTED | CONVERTED | CLOSED
-  customerName    String
-  whatsappNumber  String
-  weddingDate     String?
-  city            String?
-  pincode         String?
-  outfitColour    String?
-  preferredStyle  String?  // "minimal" | "heavy" | "personalized" | "not-sure"
-  budgetMin       Int?
-  budgetMax       Int?
-  notes           String?
-  submittedAt     DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                 String    @id @default(cuid())
+  enquiryNumber      String    @unique // human-readable: GT-1001
+  status             String    @default("NEW") // NEW | CONTACTED | IN_DISCUSSION | PAYMENT_PENDING | ORDERED | CLOSED
+  customerName       String
+  whatsappNumber     String
+  weddingDate        String?
+  weddingDateNotFixed Boolean  @default(false)
+  city               String?
+  pincode            String?
+  outfitColour       String?
+  customOutfitColour String?
+  preferredStyle     String?   // "minimal" | "heavy" | "personalized" | "not-sure"
+  budgetMin          Int?
+  budgetMax          Int?
+  personalization    String?   // "none" | "names" | "date" | "names-date" | "custom-text" | "not-sure"
+  source             String?   // e.g. "instagram", "whatsapp", "direct"
+  campaign           String?   // e.g. "maroon-heavy-reel"
+  assignedTo         String?
+  internalNotes      String?
+  notes              String?
+  submittedAt        DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  firstOpenedAt      DateTime?
+  contactedAt        DateTime?
+  convertedAt        DateTime?
 
   selectedProducts EnquiryProduct[]
 }
