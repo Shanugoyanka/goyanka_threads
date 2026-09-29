@@ -98,15 +98,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Verify products exist
-    const products = await prisma.product.findMany({
-      where: { id: { in: productIds } },
-    });
-    if (products.length === 0) {
-      return NextResponse.json(
-        { error: "Selected products not found." },
-        { status: 400 }
-      );
+    // Filter out static fallback IDs (they aren't in the DB)
+    const dbProductIds = (productIds as string[]).filter(
+      (id: string) => !id.startsWith("static-")
+    );
+
+    if (dbProductIds.length > 0) {
+      const products = await prisma.product.findMany({
+        where: { id: { in: dbProductIds } },
+      });
+      if (products.length === 0) {
+        return NextResponse.json(
+          { error: "Selected products not found." },
+          { status: 400 }
+        );
+      }
     }
 
     // Sanitize source/campaign — only allow safe short strings
@@ -139,11 +145,13 @@ export async function POST(req: NextRequest) {
             personalization: personalization || null,
             source: cleanSource || null,
             campaign: cleanCampaign || null,
-            selectedProducts: {
-              create: productIds.map((productId: string) => ({
-                productId,
-              })),
-            },
+            selectedProducts: dbProductIds.length > 0
+              ? {
+                  create: dbProductIds.map((productId: string) => ({
+                    productId,
+                  })),
+                }
+              : undefined,
           },
         });
         break;

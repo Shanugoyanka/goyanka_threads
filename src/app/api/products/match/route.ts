@@ -17,10 +17,126 @@ type ScoredProduct = RawProduct & {
   matchLabel: string | null;
 };
 
+const BUCKET =
+  "https://abovffewvfdlhvvqcvxy.supabase.co/storage/v1/object/public/goyanka%20threads";
+
 /**
- * Budget-only fallback: returns all products sorted by how close
- * their price is to the customer's budget. Guarantees results
- * as long as products exist in the database.
+ * 4 hardcoded fallback products — shown when the database is
+ * unreachable so customers always see *something*.
+ */
+const STATIC_FALLBACK = [
+  {
+    id: "static-1",
+    name: "Minimal Scallop Bridal Veil",
+    description: "A delicate scalloped edge with subtle shimmer — perfect for brides who love understated elegance.",
+    category: "bridal-veil",
+    styleTags: ["minimal", "elegant", "subtle"],
+    colours: ["red", "maroon", "pink", "ivory"],
+    veilLength: "84",
+    fabric: "Soft Tulle",
+    embroidery: "Fine scalloped border with minimal sequin detailing",
+    basePrice: 2999,
+    minPrice: 2999,
+    maxPrice: 3499,
+    customizationOptions: ["colour", "length"],
+    status: "available",
+    imageUrls: [`${BUCKET}/01_red_minimal_scallop.jpg`],
+    videoUrls: [],
+    customerMediaUrls: [],
+    deliveryDays: 10,
+    isFeatured: true,
+    isSample: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    matchScore: 8,
+    matchTier: "best" as const,
+    matchLabel: null,
+  },
+  {
+    id: "static-2",
+    name: "Heavy Zardozi Bridal Veil",
+    description: "Luxurious all-over zardozi metallic threadwork — for the bride who wants to make a grand statement.",
+    category: "bridal-veil",
+    styleTags: ["heavy", "statement", "traditional", "luxurious"],
+    colours: ["red", "maroon", "gold"],
+    veilLength: "84",
+    fabric: "Premium Net",
+    embroidery: "Full zardozi metallic threadwork with gold bullion wire",
+    basePrice: 4999,
+    minPrice: 4999,
+    maxPrice: 5999,
+    customizationOptions: ["colour", "length"],
+    status: "available",
+    imageUrls: [`${BUCKET}/09_red_heavy_zardozi.jpg`],
+    videoUrls: [],
+    customerMediaUrls: [],
+    deliveryDays: 18,
+    isFeatured: true,
+    isSample: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    matchScore: 8,
+    matchTier: "best" as const,
+    matchLabel: null,
+  },
+  {
+    id: "static-3",
+    name: "Personalized Name Bridal Veil",
+    description: "Your names, initials or wedding date beautifully embroidered — a keepsake veil you'll treasure.",
+    category: "bridal-veil",
+    styleTags: ["personalized", "custom", "elegant"],
+    colours: ["red", "maroon", "pink", "ivory"],
+    veilLength: "84",
+    fabric: "Soft Tulle",
+    embroidery: "Custom name/initials/date embroidered in metallic thread",
+    basePrice: 4299,
+    minPrice: 4299,
+    maxPrice: 4999,
+    customizationOptions: ["name", "initials", "date", "colour", "length"],
+    status: "available",
+    imageUrls: [`${BUCKET}/07_ivory_personalized.jpg`],
+    videoUrls: [],
+    customerMediaUrls: [],
+    deliveryDays: 14,
+    isFeatured: true,
+    isSample: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    matchScore: 7,
+    matchTier: "best" as const,
+    matchLabel: null,
+  },
+  {
+    id: "static-4",
+    name: "Floral Embroidered Bridal Veil",
+    description: "Delicate floral embroidery with a graceful drape — for the bride who loves fine detail.",
+    category: "bridal-veil",
+    styleTags: ["elegant", "statement", "floral"],
+    colours: ["red", "maroon", "pink"],
+    veilLength: "84",
+    fabric: "Premium Net",
+    embroidery: "Hand-embroidered floral motifs with thread and sequin accents",
+    basePrice: 3999,
+    minPrice: 3999,
+    maxPrice: 4499,
+    customizationOptions: ["colour", "border", "length"],
+    status: "available",
+    imageUrls: [`${BUCKET}/05_blush_floral_statement.jpg`],
+    videoUrls: [],
+    customerMediaUrls: [],
+    deliveryDays: 14,
+    isFeatured: true,
+    isSample: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    matchScore: 7,
+    matchTier: "best" as const,
+    matchLabel: null,
+  },
+];
+
+/**
+ * Budget-only fallback: returns all products sorted by price proximity.
  */
 function budgetFallback(
   products: RawProduct[],
@@ -76,11 +192,12 @@ export async function POST(req: NextRequest) {
     });
 
     if (allProducts.length === 0) {
+      // DB connected but no products seeded — use static fallback
       return NextResponse.json({
-        bestMatches: [],
+        bestMatches: STATIC_FALLBACK,
         alsoLike: [],
-        total: 0,
-        hasBestMatches: false,
+        total: STATIC_FALLBACK.length,
+        hasBestMatches: true,
       });
     }
 
@@ -198,7 +315,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Final safety net: if somehow both are empty, use budget fallback
+    // Final safety net
     if (bestMatches.length === 0 && alsoLike.length === 0) {
       return NextResponse.json(budgetFallback(allProducts, budgetMin, budgetMax));
     }
@@ -218,12 +335,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(budgetFallback(allProducts, budgetMin, budgetMax));
     }
 
-    return NextResponse.json(
-      {
-        error: "Failed to find matching products",
-        detail: process.env.NODE_ENV === "development" ? message : undefined,
-      },
-      { status: 500 },
-    );
+    // DB completely unreachable — return static fallback products
+    return NextResponse.json({
+      bestMatches: STATIC_FALLBACK,
+      alsoLike: [],
+      total: STATIC_FALLBACK.length,
+      hasBestMatches: true,
+    });
   }
 }
