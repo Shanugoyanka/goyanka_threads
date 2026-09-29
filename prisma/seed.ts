@@ -4,23 +4,30 @@ import { PrismaClient } from "../src/generated/prisma/client";
 const prisma = new PrismaClient();
 
 /**
- * Image base URL — points to existing repo images.
+ * Supabase Storage public URL for the "goyanka threads" bucket.
  *
- * 🔄 TO REPLACE WITH REAL PRODUCT PHOTOS:
- *    1. Upload your images to a CDN, Supabase Storage, or /public folder
- *    2. Update the URLs in each product's imageUrls array
- *    3. Re-run: npx tsx prisma/seed.ts
+ * 🔄 TO USE YOUR OWN IMAGES:
+ *    1. Upload images to the Supabase Storage bucket
+ *    2. Make sure the bucket is set to PUBLIC
+ *    3. Update filenames in the imageUrls arrays below
+ *    4. Re-run: npx tsx prisma/seed.ts
  */
-const IMG = "https://raw.githubusercontent.com/Shanugoyanka/goyanka_threads/master/images";
+const BUCKET =
+  "https://abovffewvfdlhvvqcvxy.supabase.co/storage/v1/object/public/goyanka%20threads";
+
+function img(filename: string) {
+  return `${BUCKET}/${filename}`;
+}
 
 /**
- * ⚠️  DEMO CATALOGUE — placeholder products for development & testing.
- *     Every entry has isSample: true.
+ * ⚠️  DEMO CATALOGUE — these products use real Goyanka Threads images
+ *     but have placeholder descriptions and prices.
  *
- *     To replace with real inventory:
- *     1. Set isSample: false on real products
- *     2. Update name, description, prices, images
- *     3. Run seed or use Prisma Studio
+ *     To convert to production inventory:
+ *     1. Update prices to real prices
+ *     2. Update descriptions to real descriptions
+ *     3. Set isSample: false
+ *     4. Re-run seed or edit via Prisma Studio
  */
 const demoProducts = [
   // ─── 1. Minimal Scallop Bridal Veil ───
@@ -39,11 +46,7 @@ const demoProducts = [
     maxPrice: 3499,
     customizationOptions: ["colour", "length"],
     status: "available",
-    imageUrls: [
-      `${IMG}/14_pearl_scalloped_border_red.jpg`,
-      `${IMG}/14_pearl_scalloped_border_mehroon.jpg`,
-      `${IMG}/15_sequin_scalloped_border_rani_pink.jpg`,
-    ],
+    imageUrls: [img("01_red_minimal_scallop.jpg")],
     videoUrls: [],
     customerMediaUrls: [],
     deliveryDays: 10,
@@ -67,10 +70,7 @@ const demoProducts = [
     maxPrice: 3999,
     customizationOptions: ["colour", "length"],
     status: "available",
-    imageUrls: [
-      `${IMG}/14_pearl_scalloped_border_red.jpg`,
-      `${IMG}/14_pearl_scalloped_border_rani_pink.jpg`,
-    ],
+    imageUrls: [img("02_blush_pearl_border.jpg")],
     videoUrls: [],
     customerMediaUrls: [],
     deliveryDays: 12,
@@ -95,9 +95,8 @@ const demoProducts = [
     customizationOptions: ["colour", "border", "length"],
     status: "available",
     imageUrls: [
-      `${IMG}/02_gota_patti_all_over_red.jpg`,
-      `${IMG}/02_gota_patti_all_over_mehroon.jpg`,
-      `${IMG}/02_gota_patti_all_over_rani_pink.jpg`,
+      img("05_blush_floral_statement.jpg"),
+      img("11_dusty_pink_floral.jpg"),
     ],
     videoUrls: [],
     customerMediaUrls: [],
@@ -122,11 +121,7 @@ const demoProducts = [
     maxPrice: 4999,
     customizationOptions: ["name", "initials", "date", "colour", "length"],
     status: "available",
-    imageUrls: [
-      `${IMG}/08_sequin_gota_patti_red.jpg`,
-      `${IMG}/08_sequin_gota_patti_mehroon.jpg`,
-      `${IMG}/08_sequin_gota_patti_rani_pink.jpg`,
-    ],
+    imageUrls: [img("07_ivory_personalized.jpg")],
     videoUrls: [],
     customerMediaUrls: [],
     deliveryDays: 14,
@@ -150,10 +145,7 @@ const demoProducts = [
     maxPrice: 5999,
     customizationOptions: ["colour", "length"],
     status: "available",
-    imageUrls: [
-      `${IMG}/01_zardosi_all_over_red.jpg`,
-      `${IMG}/01_zardosi_all_over_mehroon.jpg`,
-    ],
+    imageUrls: [img("09_red_heavy_zardozi.jpg")],
     videoUrls: [],
     customerMediaUrls: [],
     deliveryDays: 18,
@@ -165,7 +157,7 @@ const demoProducts = [
   {
     name: "Royal Statement Bridal Veil",
     description:
-      "Heavy embroidery with a ornate border — designed for brides who want every head to turn.",
+      "Heavy embroidery with an ornate border — designed for brides who want every head to turn.",
     category: "bridal-veil",
     styleTags: ["heavy", "statement", "luxurious"],
     colours: ["red", "maroon", "gold", "ivory"],
@@ -178,9 +170,8 @@ const demoProducts = [
     customizationOptions: ["border", "length"],
     status: "available",
     imageUrls: [
-      `${IMG}/05_zardosi_gota_patti_red.jpg`,
-      `${IMG}/05_zardosi_gota_patti_mehroon.jpg`,
-      `${IMG}/05_zardosi_gota_patti_rani_pink.jpg`,
+      img("06_red_traditional_heavy.jpg"),
+      img("03_maroon_heavy_floral.jpg"),
     ],
     videoUrls: [],
     customerMediaUrls: [],
@@ -189,7 +180,7 @@ const demoProducts = [
     isSample: true,
   },
 
-  // ─── 7. Personalized Mantra / Name Veil ───
+  // ─── 7. Personalized Mantra Veil ───
   {
     name: "Personalized Mantra Veil",
     description:
@@ -205,11 +196,7 @@ const demoProducts = [
     maxPrice: 5499,
     customizationOptions: ["name", "initials", "date", "custom-text", "colour"],
     status: "available",
-    imageUrls: [
-      `${IMG}/09_zardosi_sequin_red.jpg`,
-      `${IMG}/09_zardosi_sequin_mehroon.jpg`,
-      `${IMG}/09_zardosi_sequin_rani_pink.jpg`,
-    ],
+    imageUrls: [img("12_ivory_mantra_personalized.jpg")],
     videoUrls: [],
     customerMediaUrls: [],
     deliveryDays: 16,
@@ -234,8 +221,8 @@ const demoProducts = [
     customizationOptions: ["colour", "length"],
     status: "available",
     imageUrls: [
-      `${IMG}/04_sequin_scatter_rani_pink.jpg`,
-      `${IMG}/15_sequin_scalloped_border_rani_pink.jpg`,
+      img("08_pink_lightweight_cathedral.jpg"),
+      img("04_ivory_elegant.jpg"),
     ],
     videoUrls: [],
     customerMediaUrls: [],
@@ -261,9 +248,8 @@ const demoProducts = [
     customizationOptions: ["colour", "length"],
     status: "available",
     imageUrls: [
-      `${IMG}/06_zardosi_mirror_work_red.jpg`,
-      `${IMG}/06_zardosi_mirror_work_mehroon.jpg`,
-      `${IMG}/07_gota_patti_mirror_work_rani_pink.jpg`,
+      img("03_maroon_heavy_floral.jpg"),
+      img("11_dusty_pink_floral.jpg"),
     ],
     videoUrls: [],
     customerMediaUrls: [],
@@ -288,10 +274,7 @@ const demoProducts = [
     maxPrice: 4799,
     customizationOptions: ["colour", "length"],
     status: "available",
-    imageUrls: [
-      `${IMG}/10_mirror_sequin_rani_pink.jpg`,
-      `${IMG}/04_sequin_scatter_rani_pink.jpg`,
-    ],
+    imageUrls: [img("10_champagne_pearl_sequin.jpg")],
     videoUrls: [],
     customerMediaUrls: [],
     deliveryDays: 12,
@@ -315,11 +298,7 @@ const demoProducts = [
     maxPrice: 4299,
     customizationOptions: ["colour", "length"],
     status: "available",
-    imageUrls: [
-      `${IMG}/11_gota_kinari_gold_border_red.jpg`,
-      `${IMG}/11_gota_kinari_gold_border_mehroon.jpg`,
-      `${IMG}/13_zardosi_border_red.jpg`,
-    ],
+    imageUrls: [img("06_red_traditional_heavy.jpg")],
     videoUrls: [],
     customerMediaUrls: [],
     deliveryDays: 14,
@@ -337,7 +316,8 @@ const demoProducts = [
     colours: ["red", "maroon", "pink", "ivory", "gold"],
     veilLength: "84",
     fabric: "Your choice",
-    embroidery: "Fully custom — choose embroidery style, border, and personal text",
+    embroidery:
+      "Fully custom — choose embroidery style, border, and personal text",
     basePrice: 4999,
     minPrice: 4999,
     maxPrice: 7999,
@@ -353,9 +333,9 @@ const demoProducts = [
     ],
     status: "available",
     imageUrls: [
-      `${IMG}/03_mirror_work_shisha_red.jpg`,
-      `${IMG}/01_zardosi_all_over_mehroon.jpg`,
-      `${IMG}/09_zardosi_sequin_rani_pink.jpg`,
+      img("04_ivory_elegant.jpg"),
+      img("01_red_minimal_scallop.jpg"),
+      img("09_red_heavy_zardozi.jpg"),
     ],
     videoUrls: [],
     customerMediaUrls: [],
@@ -379,12 +359,19 @@ async function main() {
   }
 
   console.log(`\n✅ Seeded ${demoProducts.length} demo products`);
-  console.log(
-    "\n📝 These are DEMO products. Replace with real Goyanka Threads inventory by:"
-  );
-  console.log("   1. Editing this file or using Prisma Studio (npx prisma studio)");
-  console.log("   2. Setting isSample: false on real products");
-  console.log("   3. Updating imageUrls with your own product photos\n");
+  console.log("\n📸 Image mapping:");
+  console.log("   01_red_minimal_scallop.jpg       → Minimal Scallop");
+  console.log("   02_blush_pearl_border.jpg         → Pearl Border");
+  console.log("   03_maroon_heavy_floral.jpg        → Heavy Floral Cathedral, Royal Statement");
+  console.log("   04_ivory_elegant.jpg              → Lightweight Cathedral, Fully Customized");
+  console.log("   05_blush_floral_statement.jpg     → Floral Embroidered");
+  console.log("   06_red_traditional_heavy.jpg      → Royal Statement, Traditional Border");
+  console.log("   07_ivory_personalized.jpg         → Personalized Name");
+  console.log("   08_pink_lightweight_cathedral.jpg  → Lightweight Cathedral");
+  console.log("   09_red_heavy_zardozi.jpg          → Heavy Zardozi, Fully Customized");
+  console.log("   10_champagne_pearl_sequin.jpg     → Pearl & Sequin");
+  console.log("   11_dusty_pink_floral.jpg          → Floral Embroidered, Heavy Floral Cathedral");
+  console.log("   12_ivory_mantra_personalized.jpg  → Personalized Mantra");
 }
 
 main()
