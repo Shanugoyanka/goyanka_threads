@@ -94,3 +94,7 @@ body {
   box-shadow: 0 0 0 2px var(--gold), 0 8px 25px rgba(197, 165, 90, 0.2);
   background: linear-gradient(135deg, rgba(240, 230, 204, 0.3), rgba(255, 255, 255, 0.8));
 }
+
+/* Hide scrollbar but keep scroll */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
