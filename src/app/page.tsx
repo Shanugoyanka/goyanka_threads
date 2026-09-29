@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import StepWizard from "@/components/StepWizard";
 
 export default function Home() {
@@ -72,6 +73,23 @@ export default function Home() {
         >
           Design Your Veil ✨
         </motion.button>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0 }}
+          className="mt-6"
+        >
+          <Link
+            href="/discover"
+            className="inline-block px-8 py-3 border-2 border-[var(--gold)] text-[var(--gold)] rounded-full font-semibold text-base hover:bg-[var(--gold)] hover:text-white transition-all"
+          >
+            Find Your Perfect Veil 👰
+          </Link>
+          <p className="text-xs text-gray-400 mt-2">
+            Answer a few questions & browse our curated collection
+          </p>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}

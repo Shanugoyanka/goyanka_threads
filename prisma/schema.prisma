@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ── Product Catalogue ──
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  category    String   // e.g. "bridal-veil"
+  styleTags   Json     // e.g. ["minimal","elegant"]
+  colours     Json     // e.g. ["red","mehroon","rani-pink"]
+  veilLength  String   // e.g. "84" or "120" (inches)
+  fabric      String   // e.g. "Net", "Tulle", "Organza"
+  embroidery  String   // embellishment details text
+  basePrice   Int      // price in INR (whole rupees)
+  minPrice    Int?     // minimum if customization changes price
+  maxPrice    Int?     // maximum if customization changes price
+  customizationOptions Json // e.g. ["initials","name","date","custom"]
+  status      String   @default("available") // available | made-to-order | discontinued
+  imageUrls   Json     // array of image URL strings
+  videoUrls   Json     @default("[]") // array of video URL strings
+  customerMediaUrls Json @default("[]") // array of {url,type,approved}
+  deliveryDays     Int     @default(21) // estimated production + delivery days
+  isFeatured  Boolean  @default(false)
+  isSample    Boolean  @default(true) // true = sample/placeholder data
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  enquiryProducts EnquiryProduct[]
+}
+
+// ── Customer Enquiry ──
+
+model Enquiry {
+  id              String   @id @default(cuid())
+  enquiryNumber   String   @unique // human-readable: GT-XXXXXX
+  status          String   @default("NEW") // NEW | CONTACTED | CONVERTED | CLOSED
+  customerName    String
+  whatsappNumber  String
+  weddingDate     String?
+  city            String?
+  pincode         String?
+  outfitColour    String?
+  preferredStyle  String?  // "minimal" | "heavy" | "personalized" | "not-sure"
+  budgetMin       Int?
+  budgetMax       Int?
+  notes           String?
+  submittedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  selectedProducts EnquiryProduct[]
+}
+
+// ── Junction: Enquiry ↔ Product ──
+
+model EnquiryProduct {
+  id        String  @id @default(cuid())
+  enquiryId String
+  productId String
+
+  enquiry   Enquiry @relation(fields: [enquiryId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([enquiryId, productId])
+}
