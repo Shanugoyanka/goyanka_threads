@@ -140,9 +140,13 @@ export async function POST(req: NextRequest) {
       hasBestMatches: bestMatches.length > 0,
     });
   } catch (error) {
-    console.error("Product match error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Product match error:", message, error);
     return NextResponse.json(
-      { error: "Failed to find matching products" },
+      {
+        error: "Failed to find matching products",
+        detail: process.env.NODE_ENV === "development" ? message : undefined,
+      },
       { status: 500 }
     );
   }

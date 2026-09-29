@@ -49,7 +49,8 @@ export default function DiscoverPage() {
         const data = await res.json();
 
         if (!res.ok) {
-          setError(data.error || "Something went wrong. Please try again.");
+          const detail = data.detail ? ` (${data.detail})` : "";
+          setError((data.error || "Something went wrong.") + detail);
           setFlowStep("results");
           return;
         }
