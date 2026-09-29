@@ -13,10 +13,9 @@ import ProductDetail from "./ProductDetail";
 import { MatchedProduct } from "./types";
 
 interface ProductResultsProps {
-  exact: MatchedProduct[];
-  close: MatchedProduct[];
-  recommendations: MatchedProduct[];
-  hasExactMatches: boolean;
+  bestMatches: MatchedProduct[];
+  alsoLike: MatchedProduct[];
+  hasBestMatches: boolean;
   preferences: PreferenceAnswers;
   selectedIds: Set<string>;
   onToggleSelect: (id: string) => void;
@@ -35,10 +34,9 @@ function getBudgetLabel(id: string) {
 }
 
 export default function ProductResults({
-  exact,
-  close,
-  recommendations,
-  hasExactMatches,
+  bestMatches,
+  alsoLike,
+  hasBestMatches,
   preferences,
   selectedIds,
   onToggleSelect,
@@ -51,13 +49,10 @@ export default function ProductResults({
   const [prefExpanded, setPrefExpanded] = useState(false);
 
   const totalSelected = selectedIds.size;
-  const totalResults = exact.length + close.length + recommendations.length;
+  const totalResults = bestMatches.length + alsoLike.length;
 
   const colourName = getColourName(preferences.outfitColour);
   const styleName = getStyleLabel(preferences.preferredStyle);
-
-  const bestMatches = [...exact, ...close];
-  const moreStyles = recommendations;
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--background)]">
@@ -110,7 +105,7 @@ export default function ProductResults({
             className="text-xl md:text-2xl font-bold text-[var(--foreground)] leading-snug"
             style={{ fontFamily: "var(--font-playfair), serif" }}
           >
-            {hasExactMatches
+            {hasBestMatches
               ? "Veils we found for your bridal look"
               : "Styles that may complement your bridal look"}
           </h2>
@@ -222,7 +217,7 @@ export default function ProductResults({
         </motion.div>
 
         {/* No exact matches message */}
-        {!hasExactMatches && (
+        {!hasBestMatches && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -242,9 +237,9 @@ export default function ProductResults({
         {/* Best matches */}
         {bestMatches.length > 0 && (
           <ProductSection
-            title={hasExactMatches ? "Best Matches" : "Closest Matches"}
+            title={hasBestMatches ? "Best Matches" : "Closest Matches"}
             subtitle={
-              hasExactMatches
+              hasBestMatches
                 ? "These veils match your colour, style and budget"
                 : "Based on your preferences"
             }
@@ -264,13 +259,13 @@ export default function ProductResults({
         )}
 
         {/* More styles */}
-        {moreStyles.length > 0 && (
+        {alsoLike.length > 0 && (
           <ProductSection
             title="More Styles You May Like"
             subtitle="Explore other designs from our collection"
             delay={0.4}
           >
-            {moreStyles.map((product, i) => (
+            {alsoLike.map((product, i) => (
               <ProductCard
                 key={product.id}
                 product={product}

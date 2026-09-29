@@ -22,18 +22,8 @@ export interface MatchedProduct {
   createdAt: string;
   updatedAt: string;
   matchScore: number;
-  matchTier: "exact" | "close" | "recommendation";
-}
-
-export function parseJsonField<T>(value: T | string): T {
-  if (typeof value === "string") {
-    try {
-      return JSON.parse(value);
-    } catch {
-      return [] as unknown as T;
-    }
-  }
-  return value;
+  matchTier: "best" | "also-like";
+  matchLabel: string | null;
 }
 
 export function formatPrice(price: number): string {

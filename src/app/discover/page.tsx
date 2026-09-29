@@ -16,19 +16,20 @@ export default function DiscoverPage() {
     null
   );
   const [results, setResults] = useState<{
-    exact: MatchedProduct[];
-    close: MatchedProduct[];
-    recommendations: MatchedProduct[];
-    hasExactMatches: boolean;
+    bestMatches: MatchedProduct[];
+    alsoLike: MatchedProduct[];
+    hasBestMatches: boolean;
   } | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [enquiryNumber, setEnquiryNumber] = useState("");
 
   const handlePreferencesComplete = useCallback(
     async (answers: PreferenceAnswers) => {
       setPreferences(answers);
       setLoading(true);
+      setError(null);
 
       try {
         const budget = getBudgetRange(answers.budgetRange);
@@ -42,26 +43,27 @@ export default function DiscoverPage() {
             preferredStyle: answers.preferredStyle,
             outfitColour:
               answers.outfitColour !== "other" ? answers.outfitColour : null,
-            wantsCustomization: false,
           }),
         });
 
         const data = await res.json();
 
         if (!res.ok) {
-          console.error("Match error:", data.error);
+          setError(data.error || "Something went wrong. Please try again.");
+          setFlowStep("results");
           return;
         }
 
         setResults({
-          exact: data.exact,
-          close: data.close,
-          recommendations: data.recommendations,
-          hasExactMatches: data.hasExactMatches,
+          bestMatches: data.bestMatches,
+          alsoLike: data.alsoLike,
+          hasBestMatches: data.hasBestMatches,
         });
         setFlowStep("results");
       } catch (err) {
         console.error("Network error:", err);
+        setError("Could not connect. Please check your internet and try again.");
+        setFlowStep("results");
       } finally {
         setLoading(false);
       }
@@ -80,7 +82,7 @@ export default function DiscoverPage() {
 
   const getSelectedProducts = useCallback((): MatchedProduct[] => {
     if (!results) return [];
-    const all = [...results.exact, ...results.close, ...results.recommendations];
+    const all = [...results.bestMatches, ...results.alsoLike];
     return all.filter((p) => selectedIds.has(p.id));
   }, [results, selectedIds]);
 
@@ -90,6 +92,7 @@ export default function DiscoverPage() {
     setResults(null);
     setSelectedIds(new Set());
     setEnquiryNumber("");
+    setError(null);
   }, []);
 
   // Loading state
@@ -121,20 +124,45 @@ export default function DiscoverPage() {
     );
   }
 
-  if (flowStep === "results" && results && preferences) {
-    return (
-      <ProductResults
-        exact={results.exact}
-        close={results.close}
-        recommendations={results.recommendations}
-        hasExactMatches={results.hasExactMatches}
-        preferences={preferences}
-        selectedIds={selectedIds}
-        onToggleSelect={toggleProduct}
-        onEditPreferences={() => setFlowStep("preferences")}
-        onProceedToEnquiry={() => setFlowStep("enquiry")}
-      />
-    );
+  if (flowStep === "results" && preferences) {
+    // Error state
+    if (error && !results) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center px-4">
+          <div className="text-center max-w-sm">
+            <p className="text-4xl mb-4">😔</p>
+            <h2
+              className="text-xl font-bold mb-2"
+              style={{ fontFamily: "var(--font-playfair), serif" }}
+            >
+              Something went wrong
+            </h2>
+            <p className="text-sm text-gray-500 mb-6">{error}</p>
+            <button
+              onClick={() => handlePreferencesComplete(preferences)}
+              className="px-6 py-2.5 bg-gradient-to-r from-[var(--gold)] to-[var(--accent)] text-white rounded-xl font-semibold cursor-pointer"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (results) {
+      return (
+        <ProductResults
+          bestMatches={results.bestMatches}
+          alsoLike={results.alsoLike}
+          hasBestMatches={results.hasBestMatches}
+          preferences={preferences}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleProduct}
+          onEditPreferences={() => setFlowStep("preferences")}
+          onProceedToEnquiry={() => setFlowStep("enquiry")}
+        />
+      );
+    }
   }
 
   if (flowStep === "enquiry" && preferences) {
