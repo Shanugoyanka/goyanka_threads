@@ -158,41 +158,49 @@ export default function EnquiryForm({
         </div>
 
         {/* Selected veils */}
-        <div className="glass-card rounded-xl p-4 mb-5">
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Selected Veils ({selectedProducts.length})
-          </h3>
-          <div className="space-y-3">
-            {selectedProducts.map((product) => {
-              const images = product.imageUrls;
-              return (
-                <div key={product.id} className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                    {images[0] ? (
-                      <img
-                        src={images[0]}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-lg">
-                        👰
-                      </div>
-                    )}
+        {selectedProducts.length > 0 ? (
+          <div className="glass-card rounded-xl p-4 mb-5">
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+              Selected Veils ({selectedProducts.length})
+            </h3>
+            <div className="space-y-3">
+              {selectedProducts.map((product) => {
+                const images = product.imageUrls;
+                return (
+                  <div key={product.id} className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                      {images[0] ? (
+                        <img
+                          src={images[0]}
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-lg">
+                          👰
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[var(--foreground)] truncate">
+                        {product.name}
+                      </p>
+                      <p className="text-xs text-[var(--accent)] font-medium">
+                        {getPriceDisplay(product)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[var(--foreground)] truncate">
-                      {product.name}
-                    </p>
-                    <p className="text-xs text-[var(--accent)] font-medium">
-                      {getPriceDisplay(product)}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="glass-card rounded-xl p-4 mb-5 text-center">
+            <p className="text-sm text-gray-500">
+              No veils selected — our designer will help you pick the perfect one based on your preferences.
+            </p>
+          </div>
+        )}
 
         {/* Contact form */}
         <form onSubmit={handleSubmit} className="space-y-4">

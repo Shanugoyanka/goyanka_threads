@@ -63,12 +63,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+    if (productIds && !Array.isArray(productIds)) {
       return NextResponse.json(
-        { error: "Please select at least one veil design." },
+        { error: "Invalid product selection." },
         { status: 400 }
       );
     }
+
+    const safeProductIds: string[] = Array.isArray(productIds) ? productIds : [];
 
     const cleanedPhone = whatsappNumber.replace(/[\s\-()]/g, "");
 
@@ -86,7 +88,7 @@ export async function POST(req: NextRequest) {
         const recentProductIds = recent.selectedProducts
           .map((sp) => sp.productId)
           .sort();
-        const newProductIds = [...productIds].sort();
+        const newProductIds = [...safeProductIds].sort();
         if (JSON.stringify(recentProductIds) === JSON.stringify(newProductIds)) {
           return NextResponse.json({
             success: true,
@@ -99,7 +101,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Filter out static fallback IDs (they aren't in the DB)
-    const dbProductIds = (productIds as string[]).filter(
+    const dbProductIds = safeProductIds.filter(
       (id: string) => !id.startsWith("static-")
     );
 

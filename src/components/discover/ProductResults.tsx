@@ -273,40 +273,48 @@ export default function ProductResults({
         )}
       </main>
 
-      {/* Floating selection bar */}
-      <AnimatePresence>
-        {totalSelected > 0 && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--gold-light)] shadow-2xl"
-            style={{ background: "rgba(255,249,245,0.92)", backdropFilter: "blur(16px)" }}
-          >
-            <div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
-              <div className="min-w-0">
+      {/* Floating bottom bar — always visible */}
+      <motion.div
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--gold-light)] shadow-2xl"
+        style={{ background: "rgba(255,249,245,0.92)", backdropFilter: "blur(16px)" }}
+      >
+        <div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            {totalSelected > 0 ? (
+              <>
                 <p className="text-sm font-semibold text-[var(--foreground)]">
                   {totalSelected} veil{totalSelected > 1 ? "s" : ""} selected
                 </p>
                 <p className="text-[10px] text-gray-500 truncate">
                   Tap below to enquire about your favourites
                 </p>
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={onProceedToEnquiry}
-                className="flex-shrink-0 px-5 py-2.5 bg-gradient-to-r from-[var(--gold)] to-[var(--accent)] text-white rounded-full font-semibold shadow-lg hover:shadow-xl transition-shadow cursor-pointer text-sm flex items-center gap-1.5"
-              >
-                Talk to our designer
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-semibold text-[var(--foreground)]">
+                  Need help choosing?
+                </p>
+                <p className="text-[10px] text-gray-500 truncate">
+                  Our designer will help you pick the perfect veil
+                </p>
+              </>
+            )}
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={onProceedToEnquiry}
+            className="flex-shrink-0 px-5 py-2.5 bg-gradient-to-r from-[var(--gold)] to-[var(--accent)] text-white rounded-full font-semibold shadow-lg hover:shadow-xl transition-shadow cursor-pointer text-sm flex items-center gap-1.5"
+          >
+            Talk to our designer
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </motion.button>
+        </div>
+      </motion.div>
 
       {/* Product detail modal */}
       <AnimatePresence>
