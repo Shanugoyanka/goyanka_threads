@@ -26,7 +26,7 @@ CREATE TABLE "Order" (
     "additionalInstructions" TEXT,
     "customisationRefImageUrl" TEXT,
     "weddingDate" TEXT NOT NULL,
-    "dispatchDate" TEXT NOT NULL,
+    "dispatchDate" TEXT,
     "paymentScreenshotUrl" TEXT,
     "assignedTo" TEXT,
     "internalNotes" TEXT,

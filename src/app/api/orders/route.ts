@@ -49,7 +49,6 @@ export async function POST(req: NextRequest) {
       customisationPlacement,
       additionalInstructions,
       weddingDate,
-      dispatchDate,
       source,
       campaign,
     } = body;
@@ -76,8 +75,8 @@ export async function POST(req: NextRequest) {
     if (!customisation) {
       return NextResponse.json({ error: "Please select a customisation option." }, { status: 400 });
     }
-    if (!weddingDate || !dispatchDate) {
-      return NextResponse.json({ error: "Wedding date and dispatch date are required." }, { status: 400 });
+    if (!weddingDate) {
+      return NextResponse.json({ error: "Wedding date is required." }, { status: 400 });
     }
 
     const cleanedPhone = whatsappNumber.replace(/[\s\-()]/g, "");
@@ -113,7 +112,6 @@ export async function POST(req: NextRequest) {
             customisationPlacement: customisationPlacement ? String(customisationPlacement).trim().slice(0, 100) : null,
             additionalInstructions: additionalInstructions ? String(additionalInstructions).trim().slice(0, 1000) : null,
             weddingDate,
-            dispatchDate,
             source: cleanSource || null,
             campaign: cleanCampaign || null,
           },

@@ -123,7 +123,7 @@ model Order {
 
   // Dates
   weddingDate    String
-  dispatchDate   String
+  dispatchDate   String?
 
   // Payment
   paymentScreenshotUrl String?

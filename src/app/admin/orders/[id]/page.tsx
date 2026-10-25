@@ -315,7 +315,9 @@ export default function AdminOrderDetailPage({
         {/* Dates */}
         <Section title="Dates">
           <InfoRow label="Wedding Date" value={order.weddingDate} />
-          <InfoRow label="Requested Dispatch" value={order.dispatchDate} />
+          {order.dispatchDate && (
+            <InfoRow label="Dispatch Date" value={order.dispatchDate} />
+          )}
         </Section>
 
         {/* Source */}

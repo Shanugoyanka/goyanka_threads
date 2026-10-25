@@ -13,7 +13,7 @@ interface OrderListItem {
   veilShape: string;
   customisation: string;
   weddingDate: string;
-  dispatchDate: string;
+  dispatchDate: string | null;
   status: string;
   assignedTo: string | null;
   submittedAt: string;
@@ -195,7 +195,6 @@ export default function AdminDashboard() {
                     <th className="px-3 py-2 font-medium">Customer</th>
                     <th className="px-3 py-2 font-medium">Veil</th>
                     <th className="px-3 py-2 font-medium">Wedding</th>
-                    <th className="px-3 py-2 font-medium">Dispatch</th>
                     <th className="px-3 py-2 font-medium">Received</th>
                     <th className="px-3 py-2 font-medium">Assigned</th>
                     <th className="px-3 py-2 font-medium">Status</th>
@@ -241,9 +240,6 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-3 py-3 text-gray-600 text-xs">
                           {o.weddingDate}
-                        </td>
-                        <td className="px-3 py-3 text-gray-600 text-xs">
-                          {o.dispatchDate}
                         </td>
                         <td className="px-3 py-3 text-gray-500 text-xs">
                           {relativeTime(o.submittedAt)}
@@ -307,9 +303,8 @@ export default function AdminDashboard() {
                       </span>
                       <span>{relativeTime(o.submittedAt)}</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-gray-400 mt-1">
-                      <span>Wedding: {o.weddingDate}</span>
-                      <span>Dispatch: {o.dispatchDate}</span>
+                    <div className="text-xs text-gray-400 mt-1">
+                      Wedding: {o.weddingDate}
                     </div>
                   </Link>
                 );

@@ -246,7 +246,9 @@ export default function TrackOrderPage({
               }
             />
             <InfoRow label="Wedding Date" value={order.weddingDate} />
-            <InfoRow label="Expected Dispatch" value={order.dispatchDate} />
+            {order.dispatchDate && (
+              <InfoRow label="Expected Dispatch" value={order.dispatchDate} />
+            )}
           </div>
         </motion.div>
 

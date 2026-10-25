@@ -1,17 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import StepWizard from "@/components/StepWizard";
 
 export default function Home() {
-  const [started, setStarted] = useState(false);
-
-  if (started) {
-    return <StepWizard />;
-  }
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
       {/* Background decoration */}
@@ -25,9 +17,8 @@ export default function Home() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-center z-10 max-w-2xl"
+        className="text-center z-10 max-w-lg"
       >
-        {/* Logo / Brand */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -37,7 +28,7 @@ export default function Home() {
           <img
             src="/logo.png"
             alt="Goyanka Threads"
-            className="w-40 h-40 md:w-52 md:h-52 mx-auto rounded-2xl shadow-lg object-contain"
+            className="w-36 h-36 md:w-44 md:h-44 mx-auto rounded-2xl shadow-lg object-contain"
           />
         </motion.div>
 
@@ -55,56 +46,36 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="text-gray-500 mb-10 text-sm md:text-base leading-relaxed max-w-lg mx-auto"
+          className="text-gray-500 mb-10 text-sm md:text-base leading-relaxed max-w-sm mx-auto"
         >
-          Design your dream bridal veil in 5 simple steps. Choose from
-          authentic Indian embroidery patterns, handpicked bridal colours,
-          premium lace borders, and add your personal touch.
+          Already finalised your design with our team? Place your order and
+          track it online.
         </motion.p>
-
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, type: "spring" }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setStarted(true)}
-          className="px-10 py-4 bg-gradient-to-r from-[var(--gold)] to-[var(--accent)] text-white rounded-full font-semibold text-lg shadow-xl hover:shadow-2xl transition-shadow cursor-pointer"
-        >
-          Design Your Veil ✨
-        </motion.button>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0 }}
-          className="mt-6"
+          transition={{ delay: 0.8, type: "spring" }}
         >
           <Link
             href="/veil"
-            className="inline-block px-8 py-3 border-2 border-[var(--gold)] text-[var(--gold)] rounded-full font-semibold text-base hover:bg-[var(--gold)] hover:text-white transition-all"
+            className="inline-block px-10 py-4 bg-gradient-to-r from-[var(--gold)] to-[var(--accent)] text-white rounded-full font-semibold text-lg shadow-xl hover:shadow-2xl transition-shadow"
           >
-            Find Your Perfect Veil 👰
+            Design Your Perfect Veil ✨
           </Link>
-          <p className="text-xs text-gray-400 mt-2">
-            Answer a few questions & browse our curated collection
-          </p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="mt-8 flex items-center justify-center gap-6 text-xs text-gray-400"
+          transition={{ delay: 1.0 }}
+          className="mt-8 flex items-center justify-center gap-4 md:gap-6 text-xs text-gray-400 flex-wrap"
         >
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-green-400" />
-            No sign-up needed
-          </span>
-          <span>•</span>
-          <span>5 simple steps</span>
-          <span>•</span>
-          <span>Preview included</span>
+          <span>Customized bridal veils</span>
+          <span className="hidden md:inline">•</span>
+          <span>Made in India</span>
+          <span className="hidden md:inline">•</span>
+          <span>Track your order online</span>
         </motion.div>
       </motion.div>
     </div>
