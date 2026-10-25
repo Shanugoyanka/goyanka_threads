@@ -11,7 +11,6 @@ import {
   stoneDensityOptions,
   stoneColorOptions,
   customisationOptions,
-  confirmationStatements,
   type OptionWithImage,
 } from "@/data/orderOptions";
 
@@ -40,7 +39,6 @@ export interface OrderFormData {
   customerName: string;
   whatsappNumber: string;
   shippingAddress: string;
-  confirmations: boolean[];
 }
 
 const INITIAL: OrderFormData = {
@@ -66,7 +64,6 @@ const INITIAL: OrderFormData = {
   customerName: "",
   whatsappNumber: "",
   shippingAddress: "",
-  confirmations: [false, false, false, false],
 };
 
 /* ─── Step definitions ─────────────────────────── */
@@ -95,7 +92,6 @@ const STEPS: StepDef[] = [
   { id: "additionalInstructions", title: "Anything Else?", subtitle: "Any special instructions for our team" },
   { id: "weddingDate", title: "Wedding Date", subtitle: "When is the big day?", required: true },
   { id: "yourDetails", title: "Your Details", subtitle: "So we can reach you and ship your veil", required: true },
-  { id: "confirmation", title: "Confirm Order", subtitle: "Review and place your order", required: true },
 ];
 
 /* ─── Component ────────────────────────────────── */
@@ -162,9 +158,6 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
         if (!data.shippingAddress.trim() || data.shippingAddress.trim().length < 10) { setFieldError("Enter your complete shipping address with pincode"); return false; }
         return true;
       }
-      case "confirmation":
-        if (!data.confirmations.every(Boolean)) { setFieldError("Please confirm all statements"); return false; }
-        return true;
       default:
         return true;
     }
@@ -243,12 +236,6 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const toggleConfirmation = (i: number) => {
-    const next = [...data.confirmations];
-    next[i] = !next[i];
-    update("confirmations", next);
   };
 
   return (
@@ -423,12 +410,6 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
             )}
             {current?.id === "yourDetails" && (
               <YourDetailsStep data={data} update={update} />
-            )}
-            {current?.id === "confirmation" && (
-              <ConfirmationStep
-                data={data}
-                toggleConfirmation={toggleConfirmation}
-              />
             )}
           </motion.div>
         </AnimatePresence>
@@ -831,36 +812,3 @@ function YourDetailsStep({
   );
 }
 
-/* ─── Confirmation checkboxes ─── */
-function ConfirmationStep({
-  data,
-  toggleConfirmation,
-}: {
-  data: OrderFormData;
-  toggleConfirmation: (i: number) => void;
-}) {
-  return (
-    <div className="space-y-3">
-      {confirmationStatements.map((statement, i) => (
-        <label
-          key={i}
-          className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${
-            data.confirmations[i]
-              ? "border-[var(--gold)] bg-[var(--gold-light)]/20"
-              : "border-gray-200 bg-white"
-          }`}
-        >
-          <input
-            type="checkbox"
-            checked={data.confirmations[i]}
-            onChange={() => toggleConfirmation(i)}
-            className="mt-0.5 w-4 h-4 accent-[var(--gold)] cursor-pointer flex-shrink-0"
-          />
-          <span className="text-sm text-gray-700 leading-relaxed">
-            {statement}
-          </span>
-        </label>
-      ))}
-    </div>
-  );
-}
