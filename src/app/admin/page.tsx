@@ -2,27 +2,27 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { enquiryStatuses, getStatusConfig, getTeamMemberName } from "@/data/teamConfig";
+import { orderStatuses, getOrderStatusConfig, getTeamMemberName } from "@/data/teamConfig";
 
-interface EnquiryListItem {
+interface OrderListItem {
   id: string;
-  enquiryNumber: string;
+  orderNumber: string;
   customerName: string;
   whatsappNumber: string;
-  weddingDate: string | null;
-  weddingDateNotFixed: boolean;
+  veilColour: string;
+  veilShape: string;
+  customisation: string;
+  weddingDate: string;
+  dispatchDate: string;
   status: string;
   assignedTo: string | null;
   submittedAt: string;
   firstOpenedAt: string | null;
-  selectedProducts: {
-    product: { id: string; name: string; imageUrls: unknown; basePrice: number };
-  }[];
 }
 
 const FILTER_TABS = [
   { id: "ALL", label: "All" },
-  ...enquiryStatuses,
+  ...orderStatuses,
 ];
 
 function relativeTime(dateStr: string): string {
@@ -34,12 +34,14 @@ function relativeTime(dateStr: string): string {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  return new Date(dateStr).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+  });
 }
 
 export default function AdminDashboard() {
-  const [enquiries, setEnquiries] = useState<EnquiryListItem[]>([]);
-  const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
+  const [orders, setOrders] = useState<OrderListItem[]>([]);
   const [filter, setFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -48,21 +50,16 @@ export default function AdminDashboard() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filter !== "ALL") params.set("status", filter);
-      if (search) params.set("search", search);
-
-      const res = await fetch(`/api/admin/enquiries?${params}`);
+      const res = await fetch("/api/admin/orders");
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
-      setEnquiries(data.enquiries);
-      setStatusCounts(data.statusCounts);
+      setOrders(data.orders);
     } catch (err) {
-      console.error("Failed to load enquiries:", err);
+      console.error("Failed to load orders:", err);
     } finally {
       setLoading(false);
     }
-  }, [filter, search]);
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -73,10 +70,31 @@ export default function AdminDashboard() {
     setSearch(searchInput);
   };
 
+  // Client-side filter and search
+  const filtered = orders.filter((o) => {
+    if (filter !== "ALL" && o.status !== filter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      return (
+        o.customerName.toLowerCase().includes(q) ||
+        o.whatsappNumber.includes(q) ||
+        o.orderNumber.toLowerCase().includes(q) ||
+        o.veilColour.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
+
+  // Status counts from all orders (not just filtered)
+  const statusCounts: Record<string, number> = {};
+  for (const o of orders) {
+    statusCounts[o.status] = (statusCounts[o.status] || 0) + 1;
+  }
+
   const totalNew = statusCounts["NEW"] ?? 0;
-  const totalContacted = statusCounts["CONTACTED"] ?? 0;
-  const totalDiscussion = statusCounts["IN_DISCUSSION"] ?? 0;
-  const totalOrdered = statusCounts["ORDERED"] ?? 0;
+  const totalProduction = statusCounts["IN_PRODUCTION"] ?? 0;
+  const totalDispatched = statusCounts["DISPATCHED"] ?? 0;
+  const totalDelivered = statusCounts["DELIVERED"] ?? 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,7 +103,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold text-gray-900">GOYANKA THREADS</h1>
-            <p className="text-xs text-gray-500">Bridal Enquiries</p>
+            <p className="text-xs text-gray-500">Orders Dashboard</p>
           </div>
           <button
             onClick={fetchData}
@@ -100,9 +118,9 @@ export default function AdminDashboard() {
         {/* Summary cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
           <SummaryCard label="New" count={totalNew} color="bg-blue-500" highlight />
-          <SummaryCard label="Contacted" count={totalContacted} color="bg-amber-500" />
-          <SummaryCard label="In Discussion" count={totalDiscussion} color="bg-purple-500" />
-          <SummaryCard label="Ordered" count={totalOrdered} color="bg-green-500" />
+          <SummaryCard label="In Production" count={totalProduction} color="bg-amber-500" />
+          <SummaryCard label="Dispatched" count={totalDispatched} color="bg-purple-500" />
+          <SummaryCard label="Delivered" count={totalDelivered} color="bg-green-500" />
         </div>
 
         {/* Search */}
@@ -112,7 +130,7 @@ export default function AdminDashboard() {
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search name, phone, or enquiry #..."
+              placeholder="Search name, phone, order #, or colour..."
               className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-400"
             />
             <button
@@ -124,7 +142,10 @@ export default function AdminDashboard() {
             {search && (
               <button
                 type="button"
-                onClick={() => { setSearch(""); setSearchInput(""); }}
+                onClick={() => {
+                  setSearch("");
+                  setSearchInput("");
+                }}
                 className="px-3 py-2 text-sm text-gray-500 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
               >
                 Clear
@@ -136,9 +157,10 @@ export default function AdminDashboard() {
         {/* Filter tabs */}
         <div className="flex gap-1.5 overflow-x-auto pb-2 mb-4 no-scrollbar">
           {FILTER_TABS.map((tab) => {
-            const count = tab.id === "ALL"
-              ? Object.values(statusCounts).reduce((a, b) => a + b, 0)
-              : statusCounts[tab.id] ?? 0;
+            const count =
+              tab.id === "ALL"
+                ? orders.length
+                : statusCounts[tab.id] ?? 0;
             return (
               <button
                 key={tab.id}
@@ -155,12 +177,12 @@ export default function AdminDashboard() {
           })}
         </div>
 
-        {/* Enquiry list */}
+        {/* Orders list */}
         {loading ? (
           <div className="text-center py-12 text-gray-400">Loading...</div>
-        ) : enquiries.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <div className="text-center py-12 text-gray-400 text-sm">
-            {search ? "No enquiries match your search." : "No enquiries yet."}
+            {search ? "No orders match your search." : "No orders yet."}
           </div>
         ) : (
           <>
@@ -169,68 +191,70 @@ export default function AdminDashboard() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200 text-left text-xs text-gray-500 uppercase tracking-wider">
-                    <th className="px-3 py-2 font-medium">Enquiry #</th>
+                    <th className="px-3 py-2 font-medium">Order #</th>
                     <th className="px-3 py-2 font-medium">Customer</th>
+                    <th className="px-3 py-2 font-medium">Veil</th>
                     <th className="px-3 py-2 font-medium">Wedding</th>
-                    <th className="px-3 py-2 font-medium">Veils</th>
+                    <th className="px-3 py-2 font-medium">Dispatch</th>
                     <th className="px-3 py-2 font-medium">Received</th>
                     <th className="px-3 py-2 font-medium">Assigned</th>
                     <th className="px-3 py-2 font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {enquiries.map((e) => {
-                    const isNew = e.status === "NEW";
-                    const statusConf = getStatusConfig(e.status);
+                  {filtered.map((o) => {
+                    const isNew = o.status === "NEW";
+                    const statusConf = getOrderStatusConfig(o.status);
                     return (
                       <tr
-                        key={e.id}
+                        key={o.id}
                         className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
                           isNew ? "bg-blue-50/50" : ""
                         }`}
                       >
                         <td className="px-3 py-3">
-                          <Link href={`/admin/enquiries/${e.id}`} className="font-semibold text-gray-900 hover:underline">
-                            {e.enquiryNumber}
-                            {isNew && !e.firstOpenedAt && (
+                          <Link
+                            href={`/admin/orders/${o.id}`}
+                            className="font-semibold text-gray-900 hover:underline"
+                          >
+                            {o.orderNumber}
+                            {isNew && !o.firstOpenedAt && (
                               <span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-blue-500" />
                             )}
                           </Link>
                         </td>
                         <td className="px-3 py-3">
-                          <Link href={`/admin/enquiries/${e.id}`}>
-                            <div className="font-medium text-gray-900">{e.customerName}</div>
-                            <div className="text-xs text-gray-400">+91 {e.whatsappNumber}</div>
+                          <Link href={`/admin/orders/${o.id}`}>
+                            <div className="font-medium text-gray-900">
+                              {o.customerName}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              +91 {o.whatsappNumber}
+                            </div>
                           </Link>
                         </td>
-                        <td className="px-3 py-3 text-gray-600">
-                          {e.weddingDate || (e.weddingDateNotFixed ? "Not fixed" : "—")}
-                        </td>
-                        <td className="px-3 py-3">
-                          <div className="flex -space-x-1">
-                            {e.selectedProducts.slice(0, 3).map((sp, i) => {
-                              const imgs = sp.product.imageUrls as string[];
-                              return (
-                                <div key={i} className="w-7 h-7 rounded-md overflow-hidden border border-white bg-gray-100">
-                                  {imgs[0] ? (
-                                    <img src={imgs[0]} alt="" className="w-full h-full object-cover" />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-[8px]">👰</div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                            {e.selectedProducts.length > 3 && (
-                              <div className="w-7 h-7 rounded-md bg-gray-200 flex items-center justify-center text-[10px] font-medium text-gray-500 border border-white">
-                                +{e.selectedProducts.length - 3}
-                              </div>
-                            )}
+                        <td className="px-3 py-3 text-gray-600 text-xs">
+                          <div>{o.veilColour}</div>
+                          <div className="text-gray-400 capitalize">
+                            {o.veilShape}
                           </div>
                         </td>
-                        <td className="px-3 py-3 text-gray-500 text-xs">{relativeTime(e.submittedAt)}</td>
-                        <td className="px-3 py-3 text-gray-500 text-xs">{getTeamMemberName(e.assignedTo) || "—"}</td>
+                        <td className="px-3 py-3 text-gray-600 text-xs">
+                          {o.weddingDate}
+                        </td>
+                        <td className="px-3 py-3 text-gray-600 text-xs">
+                          {o.dispatchDate}
+                        </td>
+                        <td className="px-3 py-3 text-gray-500 text-xs">
+                          {relativeTime(o.submittedAt)}
+                        </td>
+                        <td className="px-3 py-3 text-gray-500 text-xs">
+                          {getTeamMemberName(o.assignedTo) || "—"}
+                        </td>
                         <td className="px-3 py-3">
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusConf.color}`}>
+                          <span
+                            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusConf.color}`}
+                          >
                             {statusConf.label}
                           </span>
                         </td>
@@ -243,46 +267,49 @@ export default function AdminDashboard() {
 
             {/* Mobile cards */}
             <div className="md:hidden space-y-3">
-              {enquiries.map((e) => {
-                const isNew = e.status === "NEW";
-                const statusConf = getStatusConfig(e.status);
+              {filtered.map((o) => {
+                const isNew = o.status === "NEW";
+                const statusConf = getOrderStatusConfig(o.status);
                 return (
                   <Link
-                    key={e.id}
-                    href={`/admin/enquiries/${e.id}`}
+                    key={o.id}
+                    href={`/admin/orders/${o.id}`}
                     className={`block bg-white rounded-xl border p-4 hover:shadow-sm transition-shadow ${
-                      isNew && !e.firstOpenedAt ? "border-blue-300 bg-blue-50/30" : "border-gray-200"
+                      isNew && !o.firstOpenedAt
+                        ? "border-blue-300 bg-blue-50/30"
+                        : "border-gray-200"
                     }`}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <span className="font-bold text-gray-900 text-sm">{e.enquiryNumber}</span>
-                        {isNew && !e.firstOpenedAt && (
+                        <span className="font-bold text-gray-900 text-sm">
+                          {o.orderNumber}
+                        </span>
+                        {isNew && !o.firstOpenedAt && (
                           <span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-blue-500" />
                         )}
                       </div>
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusConf.color}`}>
+                      <span
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusConf.color}`}
+                      >
                         {statusConf.label}
                       </span>
                     </div>
-                    <div className="text-sm font-medium text-gray-900">{e.customerName}</div>
-                    <div className="text-xs text-gray-400 mb-2">+91 {e.whatsappNumber}</div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex -space-x-1">
-                        {e.selectedProducts.slice(0, 4).map((sp, i) => {
-                          const imgs = sp.product.imageUrls as string[];
-                          return (
-                            <div key={i} className="w-8 h-8 rounded-md overflow-hidden border border-white bg-gray-100">
-                              {imgs[0] ? (
-                                <img src={imgs[0]} alt="" className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-[8px]">👰</div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <span className="text-[10px] text-gray-400">{relativeTime(e.submittedAt)}</span>
+                    <div className="text-sm font-medium text-gray-900">
+                      {o.customerName}
+                    </div>
+                    <div className="text-xs text-gray-400 mb-2">
+                      +91 {o.whatsappNumber}
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>
+                        {o.veilColour} • {o.veilShape}
+                      </span>
+                      <span>{relativeTime(o.submittedAt)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-400 mt-1">
+                      <span>Wedding: {o.weddingDate}</span>
+                      <span>Dispatch: {o.dispatchDate}</span>
                     </div>
                   </Link>
                 );
@@ -309,7 +336,9 @@ function SummaryCard({
   return (
     <div
       className={`rounded-xl p-4 bg-white border ${
-        highlight && count > 0 ? "border-blue-300 ring-1 ring-blue-200" : "border-gray-200"
+        highlight && count > 0
+          ? "border-blue-300 ring-1 ring-blue-200"
+          : "border-gray-200"
       }`}
     >
       <div className="flex items-center gap-2 mb-1">

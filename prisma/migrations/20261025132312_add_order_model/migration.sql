@@ -1,0 +1,45 @@
+-- CreateTable
+CREATE TABLE "Order" (
+    "id" TEXT NOT NULL,
+    "orderNumber" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'NEW',
+    "customerName" TEXT NOT NULL,
+    "whatsappNumber" TEXT NOT NULL,
+    "shippingAddress" TEXT NOT NULL,
+    "veilWidth" TEXT NOT NULL,
+    "veilColour" TEXT NOT NULL,
+    "veilLength" TEXT NOT NULL,
+    "blusher" TEXT,
+    "veilShape" TEXT NOT NULL,
+    "veilShapeOther" TEXT,
+    "stonePlacement" TEXT,
+    "stonePlacementOther" TEXT,
+    "stoneDensity" TEXT,
+    "stoneDensityOther" TEXT,
+    "stoneColor" TEXT,
+    "borderDetails" TEXT NOT NULL,
+    "referenceImageUrl" TEXT,
+    "customisation" TEXT NOT NULL,
+    "customisationText" TEXT,
+    "customisationSize" TEXT,
+    "customisationPlacement" TEXT,
+    "additionalInstructions" TEXT,
+    "customisationRefImageUrl" TEXT,
+    "weddingDate" TEXT NOT NULL,
+    "dispatchDate" TEXT NOT NULL,
+    "paymentScreenshotUrl" TEXT,
+    "assignedTo" TEXT,
+    "internalNotes" TEXT,
+    "source" TEXT,
+    "campaign" TEXT,
+    "submittedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "firstOpenedAt" TIMESTAMP(3),
+    "dispatchedAt" TIMESTAMP(3),
+    "deliveredAt" TIMESTAMP(3),
+
+    CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Order_orderNumber_key" ON "Order"("orderNumber");

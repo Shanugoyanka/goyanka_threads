@@ -81,3 +81,63 @@ model EnquiryProduct {
 
   @@unique([enquiryId, productId])
 }
+
+// ── Order (from finalised Google Form) ──
+
+model Order {
+  id              String   @id @default(cuid())
+  orderNumber     String   @unique // GT-O-1001
+  status          String   @default("NEW") // NEW | IN_PRODUCTION | DISPATCHED | DELIVERED | CLOSED
+
+  // Customer details
+  customerName    String
+  whatsappNumber  String
+  shippingAddress String
+
+  // Veil specifications
+  veilWidth       String
+  veilColour      String
+  veilLength      String
+  blusher         String?  // "detachable" | "attached" | null
+  veilShape       String   // "round" | "scalloped" | "straight" | "other"
+  veilShapeOther  String?
+
+  // Stone details
+  stonePlacement      String?  // "throughout" | "border-only" | "heavy-crown" | "scattered" | "other"
+  stonePlacementOther String?
+  stoneDensity        String?  // "100" | "200" | "200+" | "other"
+  stoneDensityOther   String?
+  stoneColor          String?  // "gold" | "silver" | "no-stone"
+
+  // Border
+  borderDetails       String
+  referenceImageUrl   String?
+
+  // Customisation
+  customisation           String   // "name" | "couples-name" | "wedding-date" | "initials" | "logo" | "custom-text" | "none"
+  customisationText       String?
+  customisationSize       String?
+  customisationPlacement  String?
+  additionalInstructions  String?
+  customisationRefImageUrl String?
+
+  // Dates
+  weddingDate    String
+  dispatchDate   String
+
+  // Payment
+  paymentScreenshotUrl String?
+
+  // Admin fields
+  assignedTo     String?
+  internalNotes  String?
+  source         String?
+  campaign       String?
+
+  // Timestamps
+  submittedAt    DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  firstOpenedAt  DateTime?
+  dispatchedAt   DateTime?
+  deliveredAt    DateTime?
+}
