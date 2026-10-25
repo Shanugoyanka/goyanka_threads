@@ -2,14 +2,21 @@
 
 import { useState, useEffect, useCallback, use } from "react";
 import Link from "next/link";
-import { orderStatuses, teamMembers, getOrderStatusConfig, getTeamMemberName } from "@/data/teamConfig";
+import {
+  orderStatuses,
+  teamMembers,
+  getOrderStatusConfig,
+  getTeamMemberName,
+} from "@/data/teamConfig";
 import {
   veilShapeOptions,
+  veilLengthOptions,
   stonePlacementOptions,
   stoneDensityOptions,
   stoneColorOptions,
   blusherOptions,
   customisationOptions,
+  veilColourOptions,
 } from "@/data/orderOptions";
 
 interface OrderDetail {
@@ -39,7 +46,7 @@ interface OrderDetail {
   additionalInstructions: string | null;
   customisationRefImageUrl: string | null;
   weddingDate: string;
-  dispatchDate: string;
+  dispatchDate: string | null;
   paymentScreenshotUrl: string | null;
   assignedTo: string | null;
   internalNotes: string | null;
@@ -59,8 +66,7 @@ function normalizePhone(phone: string): string {
 }
 
 function buildWhatsAppUrl(phone: string, message: string): string {
-  const normalized = normalizePhone(phone);
-  return `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${normalizePhone(phone)}?text=${encodeURIComponent(message)}`;
 }
 
 function buildWhatsAppMessage(
@@ -72,7 +78,6 @@ function buildWhatsAppMessage(
   const teamMember = assignedTo
     ? getTeamMemberName(assignedTo) || "the Goyanka Threads team"
     : "the Goyanka Threads team";
-
   return `Hi ${firstName} ❤️\n\nThis is ${teamMember} from Goyanka Threads.\n\nI have your order ${orderNumber} and I'm getting started on your custom veil. ✨\n\nJust wanted to confirm a few details before we proceed.`;
 }
 
@@ -81,8 +86,7 @@ function getLabel(
   options: { id: string; label: string }[]
 ): string {
   if (!id) return "—";
-  const found = options.find((o) => o.id === id);
-  return found ? found.label : id;
+  return options.find((o) => o.id === id)?.label ?? id;
 }
 
 function formatDateTime(dateStr: string | null): string {
@@ -121,7 +125,6 @@ export default function AdminOrderDetailPage({
       setStatus(data.order.status);
       setAssignedTo(data.order.assignedTo || "");
 
-      // Mark as opened
       if (!data.order.firstOpenedAt) {
         fetch(`/api/admin/orders/${id}`, {
           method: "PATCH",
@@ -191,29 +194,18 @@ export default function AdminOrderDetailPage({
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="text-gray-400 hover:text-gray-600 text-sm"
-            >
+            <Link href="/admin" className="text-gray-400 hover:text-gray-600 text-sm">
               ← Back
             </Link>
             <div>
-              <h1 className="text-lg font-bold text-gray-900">
-                {order.orderNumber}
-              </h1>
-              <span
-                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusConf.color}`}
-              >
+              <h1 className="text-lg font-bold text-gray-900">{order.orderNumber}</h1>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusConf.color}`}>
                 {statusConf.label}
               </span>
             </div>
           </div>
           {saveMsg && (
-            <span
-              className={`text-xs ${
-                saveMsg.includes("✓") ? "text-green-600" : "text-red-600"
-              }`}
-            >
+            <span className={`text-xs ${saveMsg.includes("✓") ? "text-green-600" : "text-red-600"}`}>
               {saveMsg}
             </span>
           )}
@@ -237,112 +229,120 @@ export default function AdminOrderDetailPage({
           Opens WhatsApp with a pre-filled message — edit before sending
         </p>
 
-        {/* Customer Info */}
+        {/* Customer Info — editable */}
         <Section title="Customer">
-          <InfoRow label="Name" value={order.customerName} />
-          <InfoRow label="WhatsApp" value={`+91 ${order.whatsappNumber}`} />
-          <InfoRow label="Shipping Address" value={order.shippingAddress} />
+          <EditableField label="Name" value={order.customerName} field="customerName" onSave={handleSave} saving={saving} />
+          <EditableField label="WhatsApp" value={order.whatsappNumber} field="whatsappNumber" onSave={handleSave} saving={saving} prefix="+91 " />
+          <EditableField label="Shipping Address" value={order.shippingAddress} field="shippingAddress" onSave={handleSave} saving={saving} multiline />
         </Section>
 
-        {/* Veil Specifications */}
+        {/* Veil Specifications — editable */}
         <Section title="Veil Specifications">
-          <InfoRow label="Width" value={order.veilWidth} />
-          <InfoRow label="Colour" value={order.veilColour} />
-          <InfoRow label="Length" value={order.veilLength} />
-          <InfoRow
+          <EditableField label="Width" value={order.veilWidth} field="veilWidth" onSave={handleSave} saving={saving} />
+          <EditableField label="Colour" value={order.veilColour} field="veilColour" onSave={handleSave} saving={saving} />
+          <EditableSelect
+            label="Length"
+            value={order.veilLength}
+            field="veilLength"
+            options={veilLengthOptions.map((o) => ({ value: o.id, label: o.label }))}
+            onSave={handleSave}
+            saving={saving}
+            allowCustom
+          />
+          <EditableSelect
             label="Shape"
-            value={
-              order.veilShape === "other"
-                ? `Other: ${order.veilShapeOther || "—"}`
-                : getLabel(order.veilShape, veilShapeOptions)
-            }
+            value={order.veilShape}
+            field="veilShape"
+            options={veilShapeOptions.map((o) => ({ value: o.id, label: o.label }))}
+            onSave={handleSave}
+            saving={saving}
           />
-          <InfoRow
+          {order.veilShape === "other" && (
+            <EditableField label="Shape (Other)" value={order.veilShapeOther || ""} field="veilShapeOther" onSave={handleSave} saving={saving} />
+          )}
+          <EditableSelect
             label="Blusher"
-            value={order.blusher ? getLabel(order.blusher, blusherOptions) : "None"}
+            value={order.blusher || "none"}
+            field="blusher"
+            options={[{ value: "none", label: "None" }, ...blusherOptions.filter(o => o.id !== "none").map((o) => ({ value: o.id, label: o.label }))]}
+            onSave={handleSave}
+            saving={saving}
           />
         </Section>
 
-        {/* Design & Stones */}
+        {/* Design & Stones — editable */}
         <Section title="Design & Stones">
-          <InfoRow label="Border" value={order.borderDetails} />
-          <InfoRow
+          <EditableField label="Border" value={order.borderDetails} field="borderDetails" onSave={handleSave} saving={saving} multiline />
+          <EditableSelect
             label="Stone Placement"
-            value={
-              order.stonePlacement === "other"
-                ? `Other: ${order.stonePlacementOther || "—"}`
-                : getLabel(order.stonePlacement, stonePlacementOptions)
-            }
+            value={order.stonePlacement || ""}
+            field="stonePlacement"
+            options={[{ value: "", label: "Not set" }, ...stonePlacementOptions.map((o) => ({ value: o.id, label: o.label }))]}
+            onSave={handleSave}
+            saving={saving}
           />
-          <InfoRow
+          {order.stonePlacement === "other" && (
+            <EditableField label="Placement (Other)" value={order.stonePlacementOther || ""} field="stonePlacementOther" onSave={handleSave} saving={saving} />
+          )}
+          <EditableSelect
             label="Stone Density"
-            value={
-              order.stoneDensity === "other"
-                ? `Other: ${order.stoneDensityOther || "—"}`
-                : getLabel(order.stoneDensity, stoneDensityOptions)
-            }
+            value={order.stoneDensity || ""}
+            field="stoneDensity"
+            options={[{ value: "", label: "Not set" }, ...stoneDensityOptions.map((o) => ({ value: o.id, label: o.label }))]}
+            onSave={handleSave}
+            saving={saving}
           />
-          <InfoRow
+          {order.stoneDensity === "other" && (
+            <EditableField label="Density (Other)" value={order.stoneDensityOther || ""} field="stoneDensityOther" onSave={handleSave} saving={saving} />
+          )}
+          <EditableSelect
             label="Stone Color"
-            value={getLabel(order.stoneColor, stoneColorOptions)}
+            value={order.stoneColor || ""}
+            field="stoneColor"
+            options={[{ value: "", label: "Not set" }, ...stoneColorOptions.map((o) => ({ value: o.id, label: o.label }))]}
+            onSave={handleSave}
+            saving={saving}
           />
         </Section>
 
-        {/* Customisation */}
+        {/* Customisation — editable */}
         <Section title="Customisation">
-          <InfoRow
+          <EditableSelect
             label="Type"
-            value={getLabel(order.customisation, customisationOptions)}
+            value={order.customisation}
+            field="customisation"
+            options={customisationOptions.map((o) => ({ value: o.id, label: o.label }))}
+            onSave={handleSave}
+            saving={saving}
           />
           {order.customisation !== "none" && (
             <>
-              <InfoRow label="Text" value={order.customisationText || "—"} />
-              <InfoRow label="Size" value={order.customisationSize || "—"} />
-              <InfoRow
-                label="Placement"
-                value={order.customisationPlacement || "—"}
-              />
+              <EditableField label="Text" value={order.customisationText || ""} field="customisationText" onSave={handleSave} saving={saving} />
+              <EditableField label="Size" value={order.customisationSize || ""} field="customisationSize" onSave={handleSave} saving={saving} />
+              <EditableField label="Placement" value={order.customisationPlacement || ""} field="customisationPlacement" onSave={handleSave} saving={saving} />
             </>
           )}
-          {order.additionalInstructions && (
-            <InfoRow
-              label="Additional Instructions"
-              value={order.additionalInstructions}
-            />
-          )}
+          <EditableField label="Additional Instructions" value={order.additionalInstructions || ""} field="additionalInstructions" onSave={handleSave} saving={saving} multiline />
         </Section>
 
-        {/* Dates */}
+        {/* Dates — editable */}
         <Section title="Dates">
-          <InfoRow label="Wedding Date" value={order.weddingDate} />
-          {order.dispatchDate && (
-            <InfoRow label="Dispatch Date" value={order.dispatchDate} />
-          )}
+          <EditableField label="Wedding Date" value={order.weddingDate} field="weddingDate" onSave={handleSave} saving={saving} />
+          <EditableField label="Dispatch Date" value={order.dispatchDate || ""} field="dispatchDate" onSave={handleSave} saving={saving} placeholder="Set by admin" />
         </Section>
 
         {/* Source */}
         <Section title="Source">
           <InfoRow label="Source" value={order.source || "Direct"} />
-          {order.campaign && (
-            <InfoRow label="Campaign" value={order.campaign} />
-          )}
+          {order.campaign && <InfoRow label="Campaign" value={order.campaign} />}
         </Section>
 
         {/* Timeline */}
         <Section title="Timeline">
           <InfoRow label="Received" value={formatDateTime(order.submittedAt)} />
-          <InfoRow
-            label="First opened"
-            value={formatDateTime(order.firstOpenedAt)}
-          />
-          <InfoRow
-            label="Dispatched"
-            value={formatDateTime(order.dispatchedAt)}
-          />
-          <InfoRow
-            label="Delivered"
-            value={formatDateTime(order.deliveredAt)}
-          />
+          <InfoRow label="First opened" value={formatDateTime(order.firstOpenedAt)} />
+          <InfoRow label="Dispatched" value={formatDateTime(order.dispatchedAt)} />
+          <InfoRow label="Delivered" value={formatDateTime(order.deliveredAt)} />
         </Section>
 
         {/* Status */}
@@ -357,9 +357,7 @@ export default function AdminOrderDetailPage({
             className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-400 disabled:opacity-50"
           >
             {orderStatuses.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
+              <option key={s.id} value={s.id}>{s.label}</option>
             ))}
           </select>
         </Section>
@@ -377,9 +375,7 @@ export default function AdminOrderDetailPage({
           >
             <option value="">Unassigned</option>
             {teamMembers.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
+              <option key={m.id} value={m.id}>{m.name}</option>
             ))}
           </select>
         </Section>
@@ -418,18 +414,14 @@ export default function AdminOrderDetailPage({
   );
 }
 
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+/* ══════════════════════════════════════════════════
+   Reusable Components
+   ══════════════════════════════════════════════════ */
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4">
-      <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-        {title}
-      </h3>
+      <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{title}</h3>
       {children}
     </div>
   );
@@ -439,9 +431,160 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between py-1.5 border-b border-gray-50 last:border-0">
       <span className="text-xs text-gray-500 flex-shrink-0">{label}</span>
-      <span className="text-sm font-medium text-gray-900 text-right ml-4 max-w-[65%]">
-        {value}
-      </span>
+      <span className="text-sm font-medium text-gray-900 text-right ml-4 max-w-[65%]">{value}</span>
+    </div>
+  );
+}
+
+/** Inline-editable text field — tap to edit, blur/enter to save */
+function EditableField({
+  label,
+  value,
+  field,
+  onSave,
+  saving,
+  prefix,
+  multiline,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  field: string;
+  onSave: (field: string, value: string) => Promise<void>;
+  saving: boolean;
+  prefix?: string;
+  multiline?: boolean;
+  placeholder?: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+
+  const save = () => {
+    if (draft !== value) {
+      onSave(field, draft);
+    }
+    setEditing(false);
+  };
+
+  if (!editing) {
+    return (
+      <div
+        className="flex items-baseline justify-between py-1.5 border-b border-gray-50 last:border-0 group cursor-pointer"
+        onClick={() => { setDraft(value); setEditing(true); }}
+      >
+        <span className="text-xs text-gray-500 flex-shrink-0">{label}</span>
+        <div className="flex items-center gap-1.5 ml-4 max-w-[65%]">
+          <span className="text-sm font-medium text-gray-900 text-right">
+            {prefix}{value || <span className="text-gray-300">{placeholder || "—"}</span>}
+          </span>
+          <span className="text-gray-300 group-hover:text-blue-400 text-xs transition-colors">✎</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="py-1.5 border-b border-gray-50 last:border-0">
+      <label className="text-xs text-gray-500 block mb-1">{label}</label>
+      {multiline ? (
+        <textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={save}
+          rows={3}
+          autoFocus
+          disabled={saving}
+          className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white focus:outline-none focus:border-blue-400 resize-none"
+        />
+      ) : (
+        <input
+          type="text"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={save}
+          onKeyDown={(e) => { if (e.key === "Enter") save(); }}
+          autoFocus
+          disabled={saving}
+          placeholder={placeholder}
+          className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white focus:outline-none focus:border-blue-400"
+        />
+      )}
+      <div className="flex gap-2 mt-1.5">
+        <button
+          onClick={save}
+          disabled={saving}
+          className="text-xs text-white bg-blue-500 px-3 py-1 rounded-md cursor-pointer hover:bg-blue-600 disabled:opacity-50"
+        >
+          Save
+        </button>
+        <button
+          onClick={() => setEditing(false)}
+          className="text-xs text-gray-500 px-3 py-1 rounded-md cursor-pointer hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Inline-editable select — tap to change, saves immediately */
+function EditableSelect({
+  label,
+  value,
+  field,
+  options,
+  onSave,
+  saving,
+  allowCustom,
+}: {
+  label: string;
+  value: string;
+  field: string;
+  options: { value: string; label: string }[];
+  onSave: (field: string, value: string) => Promise<void>;
+  saving: boolean;
+  allowCustom?: boolean;
+}) {
+  const [editing, setEditing] = useState(false);
+  const displayLabel = options.find((o) => o.value === value)?.label ?? value;
+
+  if (!editing) {
+    return (
+      <div
+        className="flex items-baseline justify-between py-1.5 border-b border-gray-50 last:border-0 group cursor-pointer"
+        onClick={() => setEditing(true)}
+      >
+        <span className="text-xs text-gray-500 flex-shrink-0">{label}</span>
+        <div className="flex items-center gap-1.5 ml-4">
+          <span className="text-sm font-medium text-gray-900 text-right">{displayLabel || "—"}</span>
+          <span className="text-gray-300 group-hover:text-blue-400 text-xs transition-colors">✎</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="py-1.5 border-b border-gray-50 last:border-0">
+      <label className="text-xs text-gray-500 block mb-1">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => {
+          onSave(field, e.target.value);
+          setEditing(false);
+        }}
+        onBlur={() => setEditing(false)}
+        autoFocus
+        disabled={saving}
+        className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white focus:outline-none focus:border-blue-400"
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+      </select>
+      {allowCustom && (
+        <p className="text-[10px] text-gray-400 mt-1">Or type a custom value in the text field below</p>
+      )}
     </div>
   );
 }
