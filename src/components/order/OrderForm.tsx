@@ -450,9 +450,9 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
             className="flex-[2] py-3.5 text-sm font-semibold text-white bg-gradient-to-r from-[var(--gold)] to-[var(--accent)] rounded-xl cursor-pointer shadow-lg hover:shadow-xl transition-shadow disabled:opacity-50"
           >
             {submitting
-              ? "Placing Order..."
+              ? "Sending..."
               : isLast
-              ? "Place Order ✨"
+              ? "Send Enquiry ✨"
               : !current?.required
               ? "Skip / Continue →"
               : "Continue →"}
