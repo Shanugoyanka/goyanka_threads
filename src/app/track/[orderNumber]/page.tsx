@@ -262,7 +262,7 @@ export default function TrackOrderPage({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          href={`https://wa.me/917223864040?text=${encodeURIComponent(
+          href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917223864040"}?text=${encodeURIComponent(
             `Hi! I have a question about my order ${order.orderNumber}.`
           )}`}
           target="_blank"

@@ -422,7 +422,7 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
           <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
             {error}
             <a
-              href="https://wa.me/917223864040?text=Hi%2C%20I%27m%20having%20trouble%20placing%20my%20order."
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "917223864040"}?text=Hi%2C%20I%27m%20having%20trouble%20placing%20my%20order.`}
               target="_blank"
               rel="noopener noreferrer"
               className="block mt-2 text-green-700 font-semibold underline"
