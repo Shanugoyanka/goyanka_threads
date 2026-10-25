@@ -12,16 +12,21 @@ interface TrackingData {
   veilShape: string;
   customisation: string;
   weddingDate: string;
-  dispatchDate: string;
+  dispatchDate: string | null;
   submittedAt: string;
   dispatchedAt: string | null;
   deliveredAt: string | null;
 }
 
 const STATUS_STEPS = [
-  { id: "NEW", label: "Order Received", icon: "📋" },
-  { id: "IN_PRODUCTION", label: "In Production", icon: "✂️" },
-  { id: "DISPATCHED", label: "Dispatched", icon: "📦" },
+  { id: "NEW", label: "Enquiry Received", icon: "📋" },
+  { id: "FINALISED", label: "Finalised", icon: "✅" },
+  { id: "PAYMENT_DONE", label: "Payment Done", icon: "💰" },
+  { id: "DYEING", label: "Veil Dyeing", icon: "🎨" },
+  { id: "STITCHING", label: "Stitching", icon: "🧵" },
+  { id: "CUSTOMISATION", label: "Customisation", icon: "✨" },
+  { id: "PACKED", label: "Packed", icon: "📦" },
+  { id: "SHIPPED", label: "Shipped", icon: "🚚" },
   { id: "DELIVERED", label: "Delivered", icon: "🎉" },
 ];
 
@@ -199,7 +204,7 @@ export default function TrackOrderPage({
                         {formatDate(order.submittedAt)}
                       </p>
                     )}
-                    {s.id === "DISPATCHED" && order.dispatchedAt && (
+                    {s.id === "SHIPPED" && order.dispatchedAt && (
                       <p className="text-xs text-gray-400 mt-0.5">
                         {formatDate(order.dispatchedAt)}
                       </p>

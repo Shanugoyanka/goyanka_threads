@@ -62,7 +62,7 @@ export async function PATCH(
       }
     }
 
-    if (data.status === "DISPATCHED" && !data.dispatchedAt) {
+    if (data.status === "SHIPPED" && !data.dispatchedAt) {
       data.dispatchedAt = new Date().toISOString();
     }
     if (data.status === "DELIVERED" && !data.deliveredAt) {

@@ -8,10 +8,6 @@ interface Props {
 }
 
 export default function OrderConfirmation({ orderNumber }: Props) {
-  const whatsappMsg = encodeURIComponent(
-    `Hi! I just placed order ${orderNumber} on your website. Looking forward to my custom veil!`
-  );
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
       {/* Background decorations */}
@@ -83,15 +79,6 @@ export default function OrderConfirmation({ orderNumber }: Props) {
           >
             Track Your Order →
           </Link>
-
-          <a
-            href={`https://wa.me/917223864040?text=${whatsappMsg}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full py-3.5 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold text-sm shadow-lg transition-colors text-center"
-          >
-            Message us on WhatsApp 💬
-          </a>
         </motion.div>
 
         <motion.p

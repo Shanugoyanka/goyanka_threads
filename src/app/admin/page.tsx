@@ -92,8 +92,9 @@ export default function AdminDashboard() {
   }
 
   const totalNew = statusCounts["NEW"] ?? 0;
-  const totalProduction = statusCounts["IN_PRODUCTION"] ?? 0;
-  const totalDispatched = statusCounts["DISPATCHED"] ?? 0;
+  const totalInProgress = (statusCounts["FINALISED"] ?? 0) + (statusCounts["PAYMENT_DONE"] ?? 0) +
+    (statusCounts["DYEING"] ?? 0) + (statusCounts["STITCHING"] ?? 0) + (statusCounts["CUSTOMISATION"] ?? 0);
+  const totalShipped = (statusCounts["PACKED"] ?? 0) + (statusCounts["SHIPPED"] ?? 0);
   const totalDelivered = statusCounts["DELIVERED"] ?? 0;
 
   return (
@@ -118,8 +119,8 @@ export default function AdminDashboard() {
         {/* Summary cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
           <SummaryCard label="New" count={totalNew} color="bg-blue-500" highlight />
-          <SummaryCard label="In Production" count={totalProduction} color="bg-amber-500" />
-          <SummaryCard label="Dispatched" count={totalDispatched} color="bg-purple-500" />
+          <SummaryCard label="In Progress" count={totalInProgress} color="bg-amber-500" />
+          <SummaryCard label="Shipped" count={totalShipped} color="bg-purple-500" />
           <SummaryCard label="Delivered" count={totalDelivered} color="bg-green-500" />
         </div>
 
