@@ -54,6 +54,8 @@ export async function PATCH(
       "customisationPlacement",
       "additionalInstructions",
       "weddingDate",
+      "finalisedPrice",
+      "paymentScreenshotUrl",
     ];
     const data: Record<string, unknown> = {};
     for (const key of allowedFields) {

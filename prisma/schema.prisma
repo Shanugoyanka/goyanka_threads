@@ -125,7 +125,8 @@ model Order {
   weddingDate    String
   dispatchDate   String?
 
-  // Payment
+  // Payment (admin-only)
+  finalisedPrice       Int?     // price in INR, set by admin after WhatsApp discussion
   paymentScreenshotUrl String?
 
   // Admin fields

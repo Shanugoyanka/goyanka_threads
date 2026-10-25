@@ -47,6 +47,7 @@ interface OrderDetail {
   customisationRefImageUrl: string | null;
   weddingDate: string;
   dispatchDate: string | null;
+  finalisedPrice: number | null;
   paymentScreenshotUrl: string | null;
   assignedTo: string | null;
   internalNotes: string | null;
@@ -331,6 +332,51 @@ export default function AdminOrderDetailPage({
           <EditableField label="Dispatch Date" value={order.dispatchDate || ""} field="dispatchDate" onSave={handleSave} saving={saving} placeholder="Set by admin" />
         </Section>
 
+        {/* Payment & Price (admin only) */}
+        <Section title="Payment & Price">
+          <div className="py-1.5 border-b border-gray-50">
+            <label className="text-xs text-gray-500 block mb-1">Finalised Price (₹)</label>
+            <PriceField
+              value={order.finalisedPrice}
+              onSave={(val) => handleSave("finalisedPrice", val)}
+              saving={saving}
+            />
+          </div>
+          <div className="py-1.5">
+            <label className="text-xs text-gray-500 block mb-1">Payment Screenshot</label>
+            {order.paymentScreenshotUrl ? (
+              <div className="space-y-2">
+                <a
+                  href={order.paymentScreenshotUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-lg overflow-hidden border border-gray-200 max-w-xs"
+                >
+                  <img
+                    src={order.paymentScreenshotUrl}
+                    alt="Payment screenshot"
+                    className="w-full h-auto"
+                  />
+                </a>
+                <ImageUrlField
+                  value={order.paymentScreenshotUrl}
+                  field="paymentScreenshotUrl"
+                  onSave={handleSave}
+                  saving={saving}
+                />
+              </div>
+            ) : (
+              <ImageUrlField
+                value=""
+                field="paymentScreenshotUrl"
+                onSave={handleSave}
+                saving={saving}
+                placeholder="Paste image URL here"
+              />
+            )}
+          </div>
+        </Section>
+
         {/* Source */}
         <Section title="Source">
           <InfoRow label="Source" value={order.source || "Direct"} />
@@ -585,6 +631,127 @@ function EditableSelect({
       {allowCustom && (
         <p className="text-[10px] text-gray-400 mt-1">Or type a custom value in the text field below</p>
       )}
+    </div>
+  );
+}
+
+/** Price input with ₹ formatting */
+function PriceField({
+  value,
+  onSave,
+  saving,
+}: {
+  value: number | null;
+  onSave: (val: number | null) => Promise<void>;
+  saving: boolean;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value?.toString() || "");
+
+  if (!editing) {
+    return (
+      <div
+        className="flex items-center justify-between group cursor-pointer"
+        onClick={() => { setDraft(value?.toString() || ""); setEditing(true); }}
+      >
+        <span className="text-sm font-medium text-gray-900">
+          {value ? `₹${value.toLocaleString("en-IN")}` : <span className="text-gray-300">Not set</span>}
+        </span>
+        <span className="text-gray-300 group-hover:text-blue-400 text-xs transition-colors">✎</span>
+      </div>
+    );
+  }
+
+  const save = () => {
+    const num = parseInt(draft.replace(/[^\d]/g, ""));
+    onSave(isNaN(num) ? null : num);
+    setEditing(false);
+  };
+
+  return (
+    <div className="flex gap-2 items-center">
+      <span className="text-sm text-gray-500">₹</span>
+      <input
+        type="text"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value.replace(/[^\d]/g, ""))}
+        onBlur={save}
+        onKeyDown={(e) => { if (e.key === "Enter") save(); }}
+        autoFocus
+        disabled={saving}
+        placeholder="e.g. 5500"
+        className="flex-1 px-3 py-2 text-sm border border-blue-300 rounded-lg bg-white focus:outline-none focus:border-blue-400"
+      />
+      <button onClick={save} disabled={saving} className="text-xs text-white bg-blue-500 px-3 py-1.5 rounded-md cursor-pointer hover:bg-blue-600 disabled:opacity-50">
+        Save
+      </button>
+      <button onClick={() => setEditing(false)} className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+        Cancel
+      </button>
+    </div>
+  );
+}
+
+/** URL input for images (paste a URL) */
+function ImageUrlField({
+  value,
+  field,
+  onSave,
+  saving,
+  placeholder,
+}: {
+  value: string;
+  field: string;
+  onSave: (field: string, value: string | null) => Promise<void>;
+  saving: boolean;
+  placeholder?: string;
+}) {
+  const [editing, setEditing] = useState(!value);
+  const [draft, setDraft] = useState(value);
+
+  if (!editing && value) {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-blue-600 truncate flex-1">{value}</span>
+        <button
+          onClick={() => { setDraft(value); setEditing(true); }}
+          className="text-xs text-gray-400 hover:text-blue-500 cursor-pointer"
+        >
+          ✎ Edit
+        </button>
+        <button
+          onClick={() => onSave(field, null)}
+          disabled={saving}
+          className="text-xs text-red-400 hover:text-red-600 cursor-pointer"
+        >
+          Remove
+        </button>
+      </div>
+    );
+  }
+
+  const save = () => {
+    const url = draft.trim();
+    onSave(field, url || null);
+    if (url) setEditing(false);
+  };
+
+  return (
+    <div className="flex gap-2">
+      <input
+        type="url"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={save}
+        onKeyDown={(e) => { if (e.key === "Enter") save(); }}
+        autoFocus={!value}
+        disabled={saving}
+        placeholder={placeholder || "Paste image URL"}
+        className="flex-1 px-3 py-2 text-xs border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-blue-400"
+      />
+      <button onClick={save} disabled={saving} className="text-xs text-white bg-blue-500 px-3 py-1.5 rounded-md cursor-pointer hover:bg-blue-600 disabled:opacity-50">
+        Save
+      </button>
     </div>
   );
 }

@@ -19,6 +19,7 @@ interface OrderListItem {
   customisation: string;
   weddingDate: string;
   dispatchDate: string | null;
+  finalisedPrice: number | null;
   status: string;
   assignedTo: string | null;
   submittedAt: string;
@@ -437,6 +438,7 @@ export default function AdminDashboard() {
                     <th className="px-3 py-2 font-medium">Wedding</th>
                     <th className="px-3 py-2 font-medium">Received</th>
                     <th className="px-3 py-2 font-medium">Assigned</th>
+                    <th className="px-3 py-2 font-medium">Price</th>
                     <th className="px-3 py-2 font-medium">Status</th>
                   </tr>
                 </thead>
@@ -479,6 +481,9 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-3 py-3 text-gray-500 text-xs">{relativeTime(o.submittedAt)}</td>
                         <td className="px-3 py-3 text-gray-500 text-xs">{getTeamMemberName(o.assignedTo) || "—"}</td>
+                        <td className="px-3 py-3 text-xs font-medium text-gray-700">
+                          {o.finalisedPrice ? `₹${o.finalisedPrice.toLocaleString("en-IN")}` : <span className="text-gray-300">—</span>}
+                        </td>
                         <td className="px-3 py-3">
                           <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusConf.color}`}>
                             {statusConf.label}
@@ -526,7 +531,9 @@ export default function AdminDashboard() {
                     <div className="text-xs text-gray-400 mb-2">+91 {o.whatsappNumber}</div>
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <span>{o.veilColour} · {o.veilShape}</span>
-                      <span>{relativeTime(o.submittedAt)}</span>
+                      <span className="font-medium text-gray-700">
+                        {o.finalisedPrice ? `₹${o.finalisedPrice.toLocaleString("en-IN")}` : ""}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between mt-1.5">
                       <div className="text-xs text-gray-400">
