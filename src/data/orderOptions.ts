@@ -18,11 +18,13 @@ export const veilColourOptions: { id: string; label: string; swatch: string }[] 
 
 // ── Lengths ──
 export const veilLengthOptions: OptionWithImage[] = [
-  { id: "shoulder", label: "Shoulder" },
-  { id: "elbow", label: "Elbow" },
-  { id: "fingertip", label: "Fingertip" },
-  { id: "chapel", label: "Chapel" },
-  { id: "cathedral", label: "Cathedral" },
+  { id: "shoulder", label: 'Shoulder — 20" (51 cm)' },
+  { id: "waist", label: 'Waist — 32" (82 cm)' },
+  { id: "fingertip", label: 'Hip / Fingertip — 39" (100 cm)' },
+  { id: "knee", label: 'Knee — 50" (127 cm)' },
+  { id: "floor", label: 'Floor — 73" (185 cm)' },
+  { id: "chapel", label: 'Chapel — 90" (229 cm)' },
+  { id: "cathedral", label: 'Cathedral — 118" (300 cm)' },
 ];
 
 // ── Shapes (will have real images) ──

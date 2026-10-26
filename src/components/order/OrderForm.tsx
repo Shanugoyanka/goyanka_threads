@@ -283,8 +283,7 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
               <ColourStep data={data} update={update} selectAndNext={selectAndNext} />
             )}
             {current?.id === "veilLength" && (
-              <SingleSelectStep
-                options={veilLengthOptions}
+              <VeilLengthStep
                 value={data.veilLength}
                 onSelect={(v) => selectAndNext("veilLength", v)}
               />
@@ -449,6 +448,62 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
 /* ══════════════════════════════════════════════════
    Sub-step Components
    ══════════════════════════════════════════════════ */
+
+/* ─── Colour Swatches ─── */
+/* ─── Veil Length with reference image ─── */
+function VeilLengthStep({
+  value,
+  onSelect,
+}: {
+  value: string;
+  onSelect: (v: string) => void;
+}) {
+  const [showGuide, setShowGuide] = useState(false);
+
+  return (
+    <div className="space-y-4">
+      {/* Reference image toggle */}
+      <button
+        type="button"
+        onClick={() => setShowGuide(!showGuide)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-[var(--gold-light)]/30 border border-[var(--gold)]/30 rounded-xl cursor-pointer hover:bg-[var(--gold-light)]/50 transition-colors"
+      >
+        <span className="text-sm font-medium text-[var(--foreground)]">
+          📐 View size guide
+        </span>
+        <span className="text-xs text-gray-500">{showGuide ? "Hide ▲" : "Show ▼"}</span>
+      </button>
+
+      {showGuide && (
+        <div className="rounded-xl overflow-hidden border border-gray-200 bg-white">
+          <img
+            src="/order/veil-size-guide.png"
+            alt="Veil size guide showing lengths from shoulder to cathedral"
+            className="w-full h-auto"
+          />
+        </div>
+      )}
+
+      {/* Length options */}
+      <div className="space-y-2">
+        {veilLengthOptions.map((opt) => (
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => onSelect(opt.id)}
+            className={`option-card w-full px-4 py-3.5 text-sm font-medium rounded-xl border cursor-pointer text-left transition-all ${
+              value === opt.id
+                ? "selected border-[var(--gold)] bg-[var(--gold-light)]/30 text-[var(--foreground)]"
+                : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /* ─── Colour Swatches ─── */
 function ColourStep({
