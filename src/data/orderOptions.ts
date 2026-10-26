@@ -25,6 +25,7 @@ export const veilLengthOptions: OptionWithImage[] = [
   { id: "floor", label: 'Floor — 73" (185 cm)' },
   { id: "chapel", label: 'Chapel — 90" (229 cm)' },
   { id: "cathedral", label: 'Cathedral — 118" (300 cm)' },
+  { id: "custom", label: "Custom length" },
 ];
 
 // ── Shapes (will have real images) ──

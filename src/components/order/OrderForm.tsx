@@ -21,10 +21,12 @@ export interface OrderFormData {
   veilColourOther: string;
   veilWidth: string;
   veilLength: string;
+  veilLengthCustom: string;
   veilShape: string;
   veilShapeOther: string;
   blusher: string;
   borderDetails: string;
+  borderImageUrl: string;
   stonePlacement: string;
   stonePlacementOther: string;
   stoneDensity: string;
@@ -46,10 +48,12 @@ const INITIAL: OrderFormData = {
   veilColourOther: "",
   veilWidth: "",
   veilLength: "",
+  veilLengthCustom: "",
   veilShape: "",
   veilShapeOther: "",
   blusher: "none",
   borderDetails: "",
+  borderImageUrl: "",
   stonePlacement: "",
   stonePlacementOther: "",
   stoneDensity: "",
@@ -133,6 +137,7 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
         return true;
       case "veilLength":
         if (!data.veilLength) { setFieldError("Please select a length"); return false; }
+        if (data.veilLength === "custom" && !data.veilLengthCustom.trim()) { setFieldError("Enter the custom length"); return false; }
         return true;
       case "veilShape":
         if (!data.veilShape) { setFieldError("Please select a shape"); return false; }
@@ -200,11 +205,12 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
           whatsappNumber: data.whatsappNumber.replace(/[\s\-()]/g, ""),
           shippingAddress: data.shippingAddress.trim(),
           veilColour: data.veilColour === "other" ? data.veilColourOther.trim() : data.veilColour,
-          veilLength: data.veilLength,
+          veilLength: data.veilLength === "custom" ? data.veilLengthCustom.trim() : data.veilLength,
           veilShape: data.veilShape,
           veilShapeOther: data.veilShapeOther,
           blusher: data.blusher,
           borderDetails: data.borderDetails.trim(),
+          referenceImageUrl: data.borderImageUrl || null,
           stonePlacement: data.stonePlacement || null,
           stonePlacementOther: data.stonePlacementOther,
           stoneDensity: data.stoneDensity || null,
@@ -285,7 +291,9 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
             {current?.id === "veilLength" && (
               <VeilLengthStep
                 value={data.veilLength}
+                customValue={data.veilLengthCustom}
                 onSelect={(v) => selectAndNext("veilLength", v)}
+                onCustomChange={(v) => update("veilLengthCustom", v)}
               />
             )}
             {current?.id === "veilShape" && (
@@ -305,19 +313,10 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
               />
             )}
             {current?.id === "borderDetails" && (
-              <div>
-                <p className="text-xs text-gray-400 mb-3">
-                  Describe the border style or write &quot;As discussed with designer&quot;.
-                </p>
-                <textarea
-                  value={data.borderDetails}
-                  onChange={(e) => update("borderDetails", e.target.value)}
-                  placeholder="Describe the border..."
-                  rows={4}
-                  className="w-full px-4 py-3.5 text-base border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-[var(--gold)] transition-colors resize-none"
-                  autoFocus
-                />
-              </div>
+              <BorderDetailsStep
+                data={data}
+                update={update}
+              />
             )}
             {current?.id === "stonePlacement" && (
               <ImageSelectStep
@@ -450,13 +449,136 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
    ══════════════════════════════════════════════════ */
 
 /* ─── Colour Swatches ─── */
+/* ─── Border Details with image upload ─── */
+function BorderDetailsStep({
+  data,
+  update,
+}: {
+  data: OrderFormData;
+  update: (field: keyof OrderFormData, value: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Image must be under 5 MB");
+      return;
+    }
+
+    setUploading(true);
+    setUploadError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "border-references");
+
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const result = await res.json();
+
+      if (!res.ok) {
+        setUploadError(result.error || "Upload failed");
+        return;
+      }
+
+      update("borderImageUrl", result.url);
+    } catch {
+      setUploadError("Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-gray-400">
+        Describe the border style or write &quot;As discussed with designer&quot;.
+      </p>
+      <textarea
+        value={data.borderDetails}
+        onChange={(e) => update("borderDetails", e.target.value)}
+        placeholder="Describe the border..."
+        rows={3}
+        className="w-full px-4 py-3.5 text-base border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-[var(--gold)] transition-colors resize-none"
+        autoFocus
+      />
+
+      {/* Image upload */}
+      <div>
+        <p className="text-xs text-gray-500 mb-2">
+          📷 Upload a reference image <span className="text-gray-400">(optional)</span>
+        </p>
+
+        {data.borderImageUrl ? (
+          <div className="space-y-2">
+            <div className="rounded-xl overflow-hidden border border-gray-200 max-w-xs">
+              <img
+                src={data.borderImageUrl}
+                alt="Border reference"
+                className="w-full h-auto"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => update("borderImageUrl", "")}
+              className="text-xs text-red-500 hover:text-red-700 cursor-pointer"
+            >
+              Remove image
+            </button>
+          </div>
+        ) : (
+          <label
+            className={`flex flex-col items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
+              uploading
+                ? "border-gray-300 bg-gray-50"
+                : "border-gray-200 hover:border-[var(--gold)] bg-white"
+            }`}
+          >
+            {uploading ? (
+              <>
+                <div className="w-6 h-6 rounded-full border-2 border-[var(--gold-light)] border-t-[var(--gold)] animate-spin" />
+                <span className="text-xs text-gray-400">Uploading...</span>
+              </>
+            ) : (
+              <>
+                <span className="text-2xl">📷</span>
+                <span className="text-xs text-gray-500">Tap to upload image</span>
+                <span className="text-[10px] text-gray-400">JPEG, PNG, WebP • Max 5 MB</span>
+              </>
+            )}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic"
+              onChange={handleUpload}
+              className="hidden"
+              disabled={uploading}
+            />
+          </label>
+        )}
+
+        {uploadError && (
+          <p className="text-xs text-red-500 mt-1">{uploadError}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Veil Length with reference image ─── */
 function VeilLengthStep({
   value,
+  customValue,
   onSelect,
+  onCustomChange,
 }: {
   value: string;
+  customValue: string;
   onSelect: (v: string) => void;
+  onCustomChange: (v: string) => void;
 }) {
   const [showGuide, setShowGuide] = useState(false);
 
@@ -501,6 +623,17 @@ function VeilLengthStep({
           </button>
         ))}
       </div>
+
+      {value === "custom" && (
+        <input
+          type="text"
+          value={customValue}
+          onChange={(e) => onCustomChange(e.target.value)}
+          placeholder='e.g. "60 inches" or "150 cm"'
+          className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-[var(--gold)]"
+          autoFocus
+        />
+      )}
     </div>
   );
 }
