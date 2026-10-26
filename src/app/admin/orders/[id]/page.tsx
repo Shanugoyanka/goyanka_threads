@@ -274,6 +274,14 @@ export default function AdminOrderDetailPage({
         {/* Design & Stones — editable */}
         <Section title="Design & Stones">
           <EditableField label="Border" value={order.borderDetails} field="borderDetails" onSave={handleSave} saving={saving} multiline />
+          {order.referenceImageUrl && (
+            <div className="py-2 border-b border-gray-50">
+              <span className="text-xs text-gray-500 block mb-1.5">Border Reference Image</span>
+              <a href={order.referenceImageUrl} target="_blank" rel="noopener noreferrer" className="block rounded-lg overflow-hidden border border-gray-200 max-w-xs">
+                <img src={order.referenceImageUrl} alt="Border reference" className="w-full h-auto" />
+              </a>
+            </div>
+          )}
           <EditableSelect
             label="Stone Placement"
             value={order.stonePlacement || ""}
