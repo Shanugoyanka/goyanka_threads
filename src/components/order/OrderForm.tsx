@@ -79,7 +79,6 @@ interface StepDef {
 
 const STEPS: StepDef[] = [
   { id: "veilColour", title: "Veil Colour", subtitle: "Choose the colour for your veil", required: true },
-  { id: "veilWidth", title: "Veil Width", subtitle: "How wide should the veil be?", required: true },
   { id: "veilLength", title: "Veil Length", subtitle: "Select the length of your veil", required: true },
   { id: "veilShape", title: "Veil Shape", subtitle: "Choose the shape of your veil", required: true },
   { id: "blusher", title: "Blusher", subtitle: "Would you like a blusher?" },
@@ -131,9 +130,6 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
       case "veilColour":
         if (!data.veilColour) { setFieldError("Please select a colour"); return false; }
         if (data.veilColour === "other" && !data.veilColourOther.trim()) { setFieldError("Enter the colour name"); return false; }
-        return true;
-      case "veilWidth":
-        if (!data.veilWidth.trim()) { setFieldError("Veil width is required"); return false; }
         return true;
       case "veilLength":
         if (!data.veilLength) { setFieldError("Please select a length"); return false; }
@@ -203,7 +199,6 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
           customerName: data.customerName.trim(),
           whatsappNumber: data.whatsappNumber.replace(/[\s\-()]/g, ""),
           shippingAddress: data.shippingAddress.trim(),
-          veilWidth: data.veilWidth.trim(),
           veilColour: data.veilColour === "other" ? data.veilColourOther.trim() : data.veilColour,
           veilLength: data.veilLength,
           veilShape: data.veilShape,
@@ -286,18 +281,6 @@ export default function OrderForm({ source, campaign, onSuccess }: Props) {
             {/* Render the right step */}
             {current?.id === "veilColour" && (
               <ColourStep data={data} update={update} selectAndNext={selectAndNext} />
-            )}
-            {current?.id === "veilWidth" && (
-              <div>
-                <input
-                  type="text"
-                  value={data.veilWidth}
-                  onChange={(e) => update("veilWidth", e.target.value)}
-                  placeholder='e.g. "72 inches" or "As discussed"'
-                  className="w-full px-4 py-3.5 text-base border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-[var(--gold)] transition-colors"
-                  autoFocus
-                />
-              </div>
             )}
             {current?.id === "veilLength" && (
               <SingleSelectStep

@@ -95,7 +95,7 @@ model Order {
   shippingAddress String
 
   // Veil specifications
-  veilWidth       String
+  veilWidth       String?
   veilColour      String
   veilLength      String
   blusher         String?  // "detachable" | "attached" | null

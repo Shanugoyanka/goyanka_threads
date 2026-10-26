@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
       customerName,
       whatsappNumber,
       shippingAddress,
-      veilWidth,
       veilColour,
       veilLength,
       blusher,
@@ -63,8 +62,8 @@ export async function POST(req: NextRequest) {
     if (!shippingAddress || typeof shippingAddress !== "string" || shippingAddress.trim().length < 10) {
       return NextResponse.json({ error: "Please provide your complete shipping address." }, { status: 400 });
     }
-    if (!veilWidth || !veilColour || !veilLength) {
-      return NextResponse.json({ error: "Veil width, colour, and length are required." }, { status: 400 });
+    if (!veilColour || !veilLength) {
+      return NextResponse.json({ error: "Veil colour and length are required." }, { status: 400 });
     }
     if (!veilShape) {
       return NextResponse.json({ error: "Please select a veil shape." }, { status: 400 });
@@ -94,7 +93,6 @@ export async function POST(req: NextRequest) {
             customerName: customerName.trim(),
             whatsappNumber: cleanedPhone,
             shippingAddress: shippingAddress.trim(),
-            veilWidth: String(veilWidth).trim(),
             veilColour: String(veilColour).trim(),
             veilLength: String(veilLength).trim(),
             blusher: blusher === "none" ? null : (blusher || null),
