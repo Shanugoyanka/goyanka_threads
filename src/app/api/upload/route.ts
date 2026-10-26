@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
@@ -35,7 +35,9 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const { error: uploadError } = await supabaseAdmin.storage
+    const supabase = getSupabaseAdmin();
+
+    const { error: uploadError } = await supabase.storage
       .from(BUCKET)
       .upload(fileName, buffer, {
         contentType: file.type,
@@ -50,7 +52,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { data: urlData } = supabaseAdmin.storage
+    const { data: urlData } = supabase.storage
       .from(BUCKET)
       .getPublicUrl(fileName);
 
